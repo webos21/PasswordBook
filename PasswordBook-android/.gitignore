@@ -1,0 +1,10 @@
+.gradle
+.settings
+.DS_Store
+.project
+.classpath
+.idea
+local.properties
+*.iml
+/build/
+/javadoc/
