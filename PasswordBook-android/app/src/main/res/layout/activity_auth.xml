@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_auth"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.gmail.webos21.passwordbook.AuthActivity">
+
+    <RelativeLayout
+        android:id="@+id/topHalf"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lblTitle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="Enter Passcode"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/lblDesc"
+            android:layout_width="match_parent"
+            android:layout_height="45dip"
+            android:layout_below="@id/lblTitle"
+            android:layout_marginTop="20dip"
+            android:gravity="center"
+            android:text="Enter your passcode"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/grpPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lblDesc"
+            android:layout_marginTop="20dip"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dip"
+                android:layout_height="45dip"
+                android:layout_weight="20" />
+
+            <TextView
+                android:id="@+id/tvPass1"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPass2"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPass3"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPass4"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dip"
+                android:layout_height="45dip"
+                android:layout_weight="20" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/lblInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/grpPass"
+            android:layout_marginTop="20dip"
+            android:gravity="center"
+            android:text="Password is not set!!\nDefault password is '0000'."
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottomHalf"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <GridView
+            android:id="@+id/inputPad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dip"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:horizontalSpacing="5dip"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="5dip" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_above="@id/inputPad"
+            android:layout_margin="20dip"
+            android:background="#ffcdcdcd" />
+    </RelativeLayout>
+
+</LinearLayout>

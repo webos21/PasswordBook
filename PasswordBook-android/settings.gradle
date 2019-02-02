@@ -1,1 +1,1 @@
-include ':app', ':material-intro', ':MaterialSettings'
+include 'webos21-java', 'webos21-android', ':app'
