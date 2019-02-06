@@ -3,6 +3,7 @@ package com.gmail.webos21.passwordbook;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+
         if (!loginFlag) {
             Intent i = new Intent(this, AuthActivity.class);
             startActivityForResult(i, LOGIN_ACTION);

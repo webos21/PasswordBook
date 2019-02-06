@@ -49,7 +49,7 @@
             <View
                 android:layout_width="0dip"
                 android:layout_height="45dip"
-                android:layout_weight="20" />
+                android:layout_weight="15" />
 
             <TextView
                 android:id="@+id/tvPass1"
@@ -97,6 +97,34 @@
                 android:id="@+id/tvPass4"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPass5"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"
+                android:layout_weight="15"
+                android:background="@android:drawable/edit_text"
+                android:focusable="true"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPass6"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
@@ -109,7 +137,7 @@
             <View
                 android:layout_width="0dip"
                 android:layout_height="45dip"
-                android:layout_weight="20" />
+                android:layout_weight="15" />
 
         </LinearLayout>
 
@@ -138,9 +166,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dip"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
+            android:layout_marginBottom="30dip"
             android:horizontalSpacing="5dip"
             android:numColumns="3"
             android:stretchMode="columnWidth"

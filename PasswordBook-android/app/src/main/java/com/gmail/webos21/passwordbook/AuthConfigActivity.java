@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.gmail.webos21.passwordbook.keypad.KeypadAdapter;
 import com.gmail.webos21.passwordbook.keypad.KeypadButton;
 
-public class AuthActivity extends AppCompatActivity {
+public class AuthConfigActivity extends AppCompatActivity {
 
     private static final String PASS_KEY = "000000";
 
@@ -38,7 +38,7 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
+        setContentView(R.layout.activity_auth_cfg);
 
         layoutView = findViewById(R.id.activity_auth);
 
