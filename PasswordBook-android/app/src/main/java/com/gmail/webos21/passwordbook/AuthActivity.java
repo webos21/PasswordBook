@@ -2,6 +2,7 @@ package com.gmail.webos21.passwordbook;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,7 +18,7 @@ import com.gmail.webos21.passwordbook.keypad.KeypadButton;
 
 public class AuthActivity extends AppCompatActivity {
 
-    private static final String PASS_KEY = "000000";
+    private String PASS_KEY;
 
     private View layoutView;
 
@@ -67,6 +68,8 @@ public class AuthActivity extends AppCompatActivity {
 
         gvInputPad.setAdapter(mKeypadAdapter);
 
+        SharedPreferences shpref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
+        PASS_KEY = shpref.getString(Consts.PREF_PASSKEY, "000000");
     }
 
     @Override

@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">암호책</string>
+    <string name="app_info">계정과 암호를 안전하게 저장하세요.</string>
+
+    <string name="navigation_drawer_open">내비 메뉴 열기</string>
+    <string name="navigation_drawer_close">내비 메뉴 닫기</string>
+
+    <string name="search">검색</string>
+
+    <string name="auth_title">사용자 인증</string>
+    <string name="auth_message">비밀번호를 입력해 주세요.</string>
+
+    <string name="auth_cfg_title">비밀번호 설정</string>
+    <string name="auth_cfg_message">사용할 비밀번호를 입력해 주세요.</string>
+    <string name="auth_cfg_info1">여기에 설정된 비밀번호는 정보 암호화에도 사용됩니다.\n설정한 비밀번호를 잊지 않도록 유의해 주세요.</string>
+    <string name="auth_cfg_info2">비밀번호는 숫자 6자만 입력받습니다.</string>
+    <string name="auth_cfg_new">신규 비밀번호 :</string>
+    <string name="auth_cfg_confirm">비밀번호 확인 :</string>
+    <string name="auth_cfg_save">저장</string>
+
+    <string name="pbe_title_add">계정 정보 추가</string>
+    <string name="pbe_title_change">계정 정보 변경</string>
+
+    <string name="pbe_id">일련번호</string>
+    <string name="pbe_surl">URL</string>
+    <string name="pbe_sname">이름</string>
+    <string name="pbe_stype">유형</string>
+    <string name="pbe_myid">아이디</string>
+    <string name="pbe_mypw">비밀번호</string>
+    <string name="pbe_regday">등록일시</string>
+    <string name="pbe_memo">메모</string>
+    <string name="pbe_add">추가</string>
+    <string name="pbe_modify">변경</string>
+
+    <string name="pbh_id">ex) 0</string>
+    <string name="pbh_surl">ex) http://www.google.com/</string>
+    <string name="pbh_sname">ex) 구글</string>
+    <string name="pbh_stype">ex) 종합서비스</string>
+    <string name="pbh_myid">ex) my_id</string>
+    <string name="pbh_mypw">ex) my_pw</string>
+    <string name="pbh_regday">ex) 2019-03-04</string>
+    <string name="pbh_memo">ex) 원하는 내용을\n    자유롭게 쓰기...</string>
+
+    <string name="err_input_new">&quot;신규 비밀번호&quot;를 입력해 주세요.</string>
+    <string name="err_input_confirm">&quot;비밀번호 확인&quot;을 입력해 주세요.</string>
+    <string name="err_input_mismatch">&quot;신규 비밀번호&quot;와 &quot;비밀번호 확인&quot;이 일치하지 않습니다.</string>
+
+    <string name="err_pb_url">&quot;URL&quot;을 정확히 입력해 주세요.</string>
+    <string name="err_pb_name">&quot;이름&quot;을 정확히 입력해 주세요.</string>
+    <string name="err_pb_type">&quot;유형&quot;을 정확히 입력해 주세요.</string>
+    <string name="err_pb_myid">&quot;아이디&quot;를 정확히 입력해 주세요.</string>
+    <string name="err_pb_mypw">&quot;비밀번호&quot;를 정확히 입력해 주세요..</string>
+    <string name="err_pb_regdate">&quot;등록일시&quot;를 정확히 입력해 주세요.</string>
+
+</resources>

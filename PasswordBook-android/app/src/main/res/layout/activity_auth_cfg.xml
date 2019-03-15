@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="vertical"
-    tools:context="com.gmail.webos21.passwordbook.AuthConfigActivity">
+    tools:context=".AuthConfigActivity">
 
     <TextView
         android:id="@+id/lblTitle"
@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
         android:gravity="center"
-        android:text="비밀번호 설정"
+        android:text="@string/auth_cfg_title"
         android:textColor="@color/colorPrimaryText"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -27,7 +27,7 @@
         android:layout_below="@id/lblTitle"
         android:layout_marginTop="20dip"
         android:gravity="center"
-        android:text="사용할 비밀번호를 입력해 주세요."
+        android:text="@string/auth_cfg_message"
         android:textColor="@color/colorAccent"
         android:textSize="20sp" />
 
@@ -38,7 +38,7 @@
         android:layout_below="@id/lblDesc"
         android:layout_marginTop="20dip"
         android:gravity="center"
-        android:text="여기에 설정된 비밀번호는 정보 암호화에도 사용됩니다.\n설정한 비밀번호를 잊지 않도록 유의해 주세요."
+        android:text="@string/auth_cfg_info1"
         android:textSize="16sp" />
 
     <TextView
@@ -48,7 +48,7 @@
         android:layout_below="@id/lblInfo1"
         android:layout_marginTop="20dip"
         android:gravity="center"
-        android:text="비밀번호는 숫자 6자만 입력받습니다."
+        android:text="@string/auth_cfg_info2"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="10"
             android:gravity="center"
-            android:text="신규 비밀번호 :"
+            android:text="@string/auth_cfg_new"
             android:textSize="18sp" />
 
         <EditText
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="10"
             android:gravity="center"
-            android:text="비밀번호 확인 :"
+            android:text="@string/auth_cfg_confirm"
             android:textSize="18sp" />
 
         <EditText
@@ -122,18 +122,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/grpPassConfirm"
         android:layout_marginTop="20dip"
-        android:visibility="gone"
         android:gravity="center"
         android:text="비밀번호는 숫자 6자만 입력받습니다."
         android:textColor="@android:color/holo_red_dark"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnInputOk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dip"
-        android:text="입력 완료"
-        android:layout_alignParentBottom="true" />
+        android:text="@string/auth_cfg_save" />
 
 </RelativeLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.gmail.webos21.passwordbook.AuthActivity">
+    tools:context=".AuthActivity">
 
     <RelativeLayout
         android:id="@+id/topHalf"
@@ -21,7 +21,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="Enter Passcode"
+            android:text="@string/auth_title"
             android:textColor="@color/colorPrimaryText"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -33,7 +33,7 @@
             android:layout_below="@id/lblTitle"
             android:layout_marginTop="20dip"
             android:gravity="center"
-            android:text="Enter your passcode"
+            android:text="@string/auth_message"
             android:textColor="@color/colorAccent"
             android:textSize="20sp" />
 
@@ -149,7 +149,7 @@
             android:layout_below="@id/grpPass"
             android:layout_marginTop="20dip"
             android:gravity="center"
-            android:text="Password is not set!!\nDefault password is '0000'."
+            android:text="@null"
             android:textSize="16sp" />
 
     </RelativeLayout>

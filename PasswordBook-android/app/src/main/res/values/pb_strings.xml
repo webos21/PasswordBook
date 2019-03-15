@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">PasswordBook</string>
+    <string name="app_info">Save your ID/PW, securely.</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="search">Search</string>
+
+    <string name="auth_title">User Auth</string>
+    <string name="auth_message">Enter your passcode.</string>
+
+    <string name="auth_cfg_title">Auth Config</string>
+    <string name="auth_cfg_message">Enter your passcode.</string>
+    <string name="auth_cfg_info1">This passcode will be used for encrytion.\nDo not forget the passcode.</string>
+    <string name="auth_cfg_info2">The passcode must be 6 numeric characters.</string>
+    <string name="auth_cfg_new">New Passcode : </string>
+    <string name="auth_cfg_confirm">Confirm Passcode : </string>
+    <string name="auth_cfg_save">SAVE</string>
+
+    <string name="pbe_title_add">Info Add</string>
+    <string name="pbe_title_change">Info Change</string>
+
+    <string name="pbe_id">Serial</string>
+    <string name="pbe_surl">URL</string>
+    <string name="pbe_sname">Name</string>
+    <string name="pbe_stype">Type</string>
+    <string name="pbe_myid">ID</string>
+    <string name="pbe_mypw">PW</string>
+    <string name="pbe_regday">Reg. Date</string>
+    <string name="pbe_memo">Memo</string>
+    <string name="pbe_add">ADD</string>
+    <string name="pbe_modify">CHANGE</string>
+
+    <string name="pbh_id">ex) 0</string>
+    <string name="pbh_surl">ex) http://www.google.com/</string>
+    <string name="pbh_sname">ex) Google</string>
+    <string name="pbh_stype">ex) Portal</string>
+    <string name="pbh_myid">ex) my_id</string>
+    <string name="pbh_mypw">ex) my_pw</string>
+    <string name="pbh_regday">ex) 2019-03-04</string>
+    <string name="pbh_memo">ex) whatever you want to write...</string>
+
+    <string name="err_input_new">Please, input the &quot;New Passcode&quot;.</string>
+    <string name="err_input_confirm">Please, input the &quot;Confirm Passcode&quot;.</string>
+    <string name="err_input_mismatch">&quot;New Passcode&quot; is not match to &quot;Confirm Passcode&quot;.</string>
+
+    <string name="err_pb_url">Please, input the valid &quot;URL&quot;.</string>
+    <string name="err_pb_name">Please, input the valid &quot;Name&quot;.</string>
+    <string name="err_pb_type">Please, input the valid &quot;Type&quot;.</string>
+    <string name="err_pb_myid">Please, input the valid &quot;Type&quot;.</string>
+    <string name="err_pb_mypw">Please, input the valid &quot;Type&quot;.</string>
+    <string name="err_pb_regdate">Please, input the valid &quot;Reg. Date&quot;.</string>
+
+</resources>

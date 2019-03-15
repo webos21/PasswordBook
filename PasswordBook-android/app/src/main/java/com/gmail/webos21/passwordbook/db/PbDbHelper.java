@@ -102,10 +102,10 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
         Cursor rset = db.rawQuery(
                 /* intent ---------- */ "SELECT * " +
                         /* intent -------- */ " FROM " + TB_PASSWORD_BOOK + " " +
-                        /* intent -------- */ " WHERE (surl LIKE '%?%') OR " +
-                        /* intent -------- */ "        (sname LIKE '%?%') OR " +
-                        /* intent -------- */ "        (stype LIKE '%?%')"
-                , new String[]{keyString, keyString, keyString});
+                        /* intent -------- */ " WHERE (surl LIKE ?) OR " +
+                        /* intent -------- */ "        (sname LIKE ?) OR " +
+                        /* intent -------- */ "        (stype LIKE ?)"
+                , new String[]{"%" + keyString + "%", "%" + keyString + "%", "%" + keyString + "%"});
         if (rset == null || rset.getCount() == 0) {
             return aList;
         }
