@@ -20,12 +20,16 @@ public class PbRowAdapter extends BaseAdapter {
 
     private ImageLoader imgLoader;
 
-    public PbRowAdapter(Context context) {
+    private boolean bShowIcon;
+
+    public PbRowAdapter(Context context, boolean showIcon) {
         PbDbManager dbMan = PbDbManager.getInstance();
         dbMan.init(context);
 
         pbDb = dbMan.getPbDbInterface();
         pbRows = pbDb.findRows();
+
+        this.bShowIcon = showIcon;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class PbRowAdapter extends BaseAdapter {
         }
 
         if (imgLoader == null) {
-            imgLoader = new ImageLoader(context, R.drawable.ic_not_found);
+            imgLoader = new ImageLoader(context, R.drawable.ic_gt);
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
@@ -67,7 +71,11 @@ public class PbRowAdapter extends BaseAdapter {
         PbRow pbData = pbRows.get(position);
 
         // 아이템 내 각 위젯에 데이터 반영
-        imgLoader.DisplayImage(pbData.getSiteUrl() + "/favicon.ico", iconImageView);
+        if (bShowIcon) {
+            imgLoader.DisplayImage(pbData.getSiteUrl() + "/favicon.ico", iconImageView);
+        } else {
+            iconImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_gt));
+        }
         titleTextView.setText("[" + pbData.getSiteType() + "] " + pbData.getSiteName());
         descTextView.setText(pbData.getSiteUrl());
 
@@ -77,11 +85,17 @@ public class PbRowAdapter extends BaseAdapter {
     public void searchItems(String w) {
         pbRows.clear();
         pbRows = pbDb.findRows(w);
+        notifyDataSetChanged();
     }
 
     public void searchAll() {
         pbRows.clear();
         pbRows = pbDb.findRows();
+        notifyDataSetChanged();
     }
 
+    public void setShowIcon(boolean bShowIcon) {
+        this.bShowIcon = bShowIcon;
+        notifyDataSetChanged();
+    }
 }

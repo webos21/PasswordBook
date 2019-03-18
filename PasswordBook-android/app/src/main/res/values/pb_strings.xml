@@ -18,6 +18,9 @@
     <string name="auth_cfg_confirm">Confirm Passcode : </string>
     <string name="auth_cfg_save">SAVE</string>
 
+    <string name="cfg_icon_view">Show Icon</string>
+    <string name="cfg_total_item">Total : </string>
+
     <string name="pbe_title_add">Info Add</string>
     <string name="pbe_title_change">Info Change</string>
 
@@ -40,6 +43,8 @@
     <string name="pbh_mypw">ex) my_pw</string>
     <string name="pbh_regday">ex) 2019-03-04</string>
     <string name="pbh_memo">ex) whatever you want to write...</string>
+
+    <string name="err_perm_exflah">This app needs the access permission of &quot;External Storage&quot;</string>
 
     <string name="err_input_new">Please, input the &quot;New Passcode&quot;.</string>
     <string name="err_input_confirm">Please, input the &quot;Confirm Passcode&quot;.</string>

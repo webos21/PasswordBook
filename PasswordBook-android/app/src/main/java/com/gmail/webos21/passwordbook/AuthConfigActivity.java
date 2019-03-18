@@ -1,12 +1,19 @@
 package com.gmail.webos21.passwordbook;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AuthConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -14,8 +21,6 @@ public class AuthConfigActivity extends AppCompatActivity implements View.OnClic
     private EditText edPassConfirm;
     private TextView tvMessage;
     private Button btnInputOk;
-
-    private String inputPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +38,33 @@ public class AuthConfigActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onStart() {
         super.onStart();
-        inputPass = "";
+
+        // Request Permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Consts.PERM_REQ_EXTERNAL_STORAGE);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == Consts.PERM_REQ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // OK, nothing to do
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.err_perm_exflah), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
     }
 
     @Override
@@ -84,6 +110,9 @@ public class AuthConfigActivity extends AppCompatActivity implements View.OnClic
 
         prefEdit.putString(Consts.PREF_PASSKEY, p1);
         prefEdit.commit();
+
+        Intent i = new Intent();
+        setResult(Activity.RESULT_OK, i);
 
         finish();
     }

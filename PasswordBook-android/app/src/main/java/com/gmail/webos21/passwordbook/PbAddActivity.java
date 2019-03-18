@@ -1,6 +1,8 @@
 package com.gmail.webos21.passwordbook;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -155,6 +157,9 @@ public class PbAddActivity extends AppCompatActivity implements View.OnClickList
         PbRow pbr = new PbRow(null, surl, sname, stype, myid, mypw, rd.getTime(), memo);
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
         pdi.updateRow(pbr);
+
+        Intent i = new Intent();
+        setResult(Activity.RESULT_OK, i);
 
         finish();
     }

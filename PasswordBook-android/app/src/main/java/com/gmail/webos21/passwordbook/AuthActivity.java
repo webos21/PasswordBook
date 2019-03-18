@@ -1,9 +1,13 @@
 package com.gmail.webos21.passwordbook;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.webos21.passwordbook.keypad.KeypadAdapter;
 import com.gmail.webos21.passwordbook.keypad.KeypadButton;
@@ -76,6 +81,15 @@ public class AuthActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         inputPass = "";
+
+        // Request Permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Consts.PERM_REQ_EXTERNAL_STORAGE);
+        }
     }
 
     @Override
@@ -84,6 +98,19 @@ public class AuthActivity extends AppCompatActivity {
         ShowInputView();
 
         super.onStop();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == Consts.PERM_REQ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // OK, nothing to do
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.err_perm_exflah), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
     }
 
     private void ShowInputView() {

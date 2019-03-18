@@ -1,9 +1,11 @@
 package com.gmail.webos21.passwordbook;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class PbEditActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "PbEditActivity";
 
     private TextView lblTitle;
 
@@ -73,7 +77,9 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
 
         Intent i = getIntent();
         if (i != null) {
+            Log.i(TAG, "i = " + i);
             Long pbId = i.getLongExtra(Consts.EXTRA_ID, -1);
+            Log.i(TAG, "pbId = " + pbId);
             if (pbId > 0) {
                 PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
                 setValues(pdi.getRow(pbId));
@@ -190,6 +196,9 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         PbRow pbr = new PbRow(Long.parseLong(id), surl, sname, stype, myid, mypw, rd.getTime(), memo);
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
         pdi.updateRow(pbr);
+
+        Intent i = new Intent();
+        setResult(Activity.RESULT_OK, i);
 
         finish();
     }

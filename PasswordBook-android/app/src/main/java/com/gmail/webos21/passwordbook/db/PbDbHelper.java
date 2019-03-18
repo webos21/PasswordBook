@@ -20,13 +20,13 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
 
     private static final String CREATE_TB_PASSWORD_BOOK =
             /* Indent */"CREATE TABLE IF NOT EXISTS " + TB_PASSWORD_BOOK + " (" +
-            /* Indent */"	id               BIGINT    PRIMARY KEY, " +
+            /* Indent */"	id               INTEGER  PRIMARY KEY  AUTOINCREMENT, " +
             /* Indent */"	surl             VARCHAR(100), " +
             /* Indent */"	sname            VARCHAR(100), " +
             /* Indent */"	stype            VARCHAR(100), " +
             /* Indent */"	myid             VARCHAR(100), " +
             /* Indent */"	mypw             VARCHAR(100), " +
-            /* Indent */"	reg_date         BIGINT, " +
+            /* Indent */"	reg_date         INTEGER, " +
             /* Indent */"	memo             VARCHAR(4000) " +
             /* Indent */");";
 
@@ -40,7 +40,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (Consts.DEBUG) {
+        if (Consts.DB_DEBUG) {
             Log.d(TAG, "onCreate [" + db.getPath() + "]");
         }
         db.execSQL(CREATE_TB_PASSWORD_BOOK);
@@ -52,7 +52,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (Consts.DEBUG) {
+        if (Consts.DB_DEBUG) {
             Log.d(TAG, "onUpgrade [" + db.getPath() + "] oldVer = "
                     + oldVersion + ", newVer = " + newVersion);
         }
@@ -90,6 +90,10 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             rset.close();
         }
         db.close();
+
+        if (Consts.DB_DEBUG) {
+            debugDump(TB_PASSWORD_BOOK);
+        }
 
         return aList;
     }
@@ -194,10 +198,6 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
         }
         db.close();
 
-        if (Consts.DEBUG) {
-            debugDump(TB_PASSWORD_BOOK);
-        }
-
         return true;
     }
 
@@ -206,10 +206,6 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
         SQLiteDatabase db = getWritableDatabase();
         int result = db.delete(TB_PASSWORD_BOOK, "id = " + id, null);
         db.close();
-
-        if (Consts.DEBUG) {
-            debugDump(TB_PASSWORD_BOOK);
-        }
 
         return result;
     }
@@ -233,7 +229,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             sb.append(rset.getColumnName(i)).append('(').append(i)
                     .append(')').append('\t').append('|').append('\t');
         }
-        if (Consts.DEBUG) {
+        if (Consts.DB_DEBUG) {
             Log.d(TAG, sb.toString());
         }
 
@@ -247,7 +243,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             sb.append('\n');
             rset.moveToNext();
         }
-        if (Consts.DEBUG) {
+        if (Consts.DB_DEBUG) {
             Log.d(TAG, sb.toString());
         }
 

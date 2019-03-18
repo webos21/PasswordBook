@@ -18,6 +18,9 @@
     <string name="auth_cfg_confirm">비밀번호 확인 :</string>
     <string name="auth_cfg_save">저장</string>
 
+    <string name="cfg_icon_view">아이콘 보기</string>
+    <string name="cfg_total_item">총 갯수 : </string>
+
     <string name="pbe_title_add">계정 정보 추가</string>
     <string name="pbe_title_change">계정 정보 변경</string>
 
@@ -40,6 +43,8 @@
     <string name="pbh_mypw">ex) my_pw</string>
     <string name="pbh_regday">ex) 2019-03-04</string>
     <string name="pbh_memo">ex) 원하는 내용을\n    자유롭게 쓰기...</string>
+
+    <string name="err_perm_exflah">암호책은 &quot;External Storage&quot; 권한이 꼭 필요합니다.</string>
 
     <string name="err_input_new">&quot;신규 비밀번호&quot;를 입력해 주세요.</string>
     <string name="err_input_confirm">&quot;비밀번호 확인&quot;을 입력해 주세요.</string>
