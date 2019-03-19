@@ -109,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (Consts.DEBUG) {
+            Log.i(TAG, "onCreateOptionsMenu!!!!!!!!!!!!!");
+        }
+
         getMenuInflater().inflate(R.menu.main, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -445,13 +449,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public boolean onQueryTextSubmit(String query) {
             this.myAdapter.searchItems(query);
-            return false;
+            return true;
         }
 
         @Override
         public boolean onQueryTextChange(String newText) {
             if (newText == null || newText.length() == 0) {
                 this.myAdapter.searchAll();
+                return true;
             }
             return false;
         }
