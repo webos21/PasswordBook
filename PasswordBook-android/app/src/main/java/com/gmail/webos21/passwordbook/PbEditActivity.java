@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 import com.gmail.webos21.passwordbook.db.PbDbInterface;
 import com.gmail.webos21.passwordbook.db.PbDbManager;
 import com.gmail.webos21.passwordbook.db.PbRow;
@@ -37,6 +38,7 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
     private EditText edMyId;
     private EditText edMyPw;
     private TextView tvRegDate;
+    private TextView tvFixgDate;
     private EditText edMemo;
 
     private Button btnSave;
@@ -62,6 +64,7 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         edMyPw = (EditText) findViewById(R.id.ed_mypw);
         tvRegDate = (TextView) findViewById(R.id.tv_regdate);
         tvRegDate.setOnClickListener(this);
+        tvFixgDate = (TextView) findViewById(R.id.tv_fixdate);
         edMemo = (EditText) findViewById(R.id.ed_memo);
 
         btnSave = (Button) findViewById(R.id.btn_save);
@@ -78,7 +81,7 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         Intent i = getIntent();
         if (i != null) {
             Log.i(TAG, "i = " + i);
-            Long pbId = i.getLongExtra(Consts.EXTRA_ID, -1);
+            Long pbId = i.getLongExtra(Consts.EXTRA_ARG_ID, -1);
             Log.i(TAG, "pbId = " + pbId);
             if (pbId > 0) {
                 PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
@@ -112,13 +115,17 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setValues(PbRow pb) {
+        PbApp app = (PbApp) getApplicationContext();
+        byte[] pkBytes = app.getPkBytes();
+
         tvId.setText(pb.getId().toString());
         edUrl.setText(pb.getSiteUrl());
         edName.setText(pb.getSiteName());
         edType.setText(pb.getSiteType());
-        edMyId.setText(pb.getMyId());
-        edMyPw.setText(pb.getMyPw());
+        edMyId.setText(PbCryptHelper.decData(pb.getMyId(), pkBytes));
+        edMyPw.setText(PbCryptHelper.decData(pb.getMyPw(), pkBytes));
         tvRegDate.setText(Consts.SDF_DATE.format(pb.getRegDate()));
+        tvFixgDate.setText(Consts.SDF_DATETIME.format(pb.getFixDate()));
         edMemo.setText(pb.getMemo());
     }
 
@@ -193,7 +200,13 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
 
-        PbRow pbr = new PbRow(Long.parseLong(id), surl, sname, stype, myid, mypw, rd.getTime(), memo);
+        PbApp app = (PbApp) getApplicationContext();
+        byte[] pkBytes = app.getPkBytes();
+
+        String encId = PbCryptHelper.encData(myid, pkBytes);
+        String encPw = PbCryptHelper.encData(mypw, pkBytes);
+
+        PbRow pbr = new PbRow(Long.parseLong(id), surl, sname, stype, encId, encPw, rd.getTime(), System.currentTimeMillis(), memo);
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
         pdi.updateRow(pbr);
 

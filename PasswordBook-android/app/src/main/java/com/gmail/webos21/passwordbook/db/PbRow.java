@@ -10,9 +10,11 @@ public class PbRow {
     private String myId;
     private String myPw;
     private Date regDate;
+    private Date fixDate;
     private String memo;
 
-    public PbRow(Long id, String siteUrl, String siteName, String siteType, String myId, String myPw, Long regDate, String memo) {
+    public PbRow(Long id, String siteUrl, String siteName, String siteType, String myId, String myPw,
+                 Long regDate, Long fixDate, String memo) {
         this.id = id;
         this.siteUrl = siteUrl;
         this.siteName = siteName;
@@ -20,6 +22,7 @@ public class PbRow {
         this.myId = myId;
         this.myPw = myPw;
         this.regDate = new Date(regDate);
+        this.fixDate = new Date(fixDate);
         this.memo = memo;
     }
 
@@ -77,6 +80,14 @@ public class PbRow {
 
     public void setRegDate(Date regDate) {
         this.regDate = regDate;
+    }
+
+    public Date getFixDate() {
+        return fixDate;
+    }
+
+    public void setFixDate(Date fixDate) {
+        this.fixDate = fixDate;
     }
 
     public String getMemo() {

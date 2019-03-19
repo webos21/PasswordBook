@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 import com.gmail.webos21.passwordbook.db.PbDbInterface;
 import com.gmail.webos21.passwordbook.db.PbDbManager;
 import com.gmail.webos21.passwordbook.db.PbRow;
@@ -26,6 +27,7 @@ public class PbAddActivity extends AppCompatActivity implements View.OnClickList
     private TextView lblTitle;
 
     private ViewGroup panelId;
+    private ViewGroup panelFixday;
 
     private TextView tvId;
     private EditText edUrl;
@@ -50,6 +52,9 @@ public class PbAddActivity extends AppCompatActivity implements View.OnClickList
 
         panelId = (ViewGroup) findViewById(R.id.panel_id);
         panelId.setVisibility(View.GONE);
+
+        panelFixday = (ViewGroup) findViewById(R.id.panel_fixday);
+        panelFixday.setVisibility(View.GONE);
 
         tvId = (TextView) findViewById(R.id.tv_id);
         edUrl = (EditText) findViewById(R.id.ed_url);
@@ -154,7 +159,13 @@ public class PbAddActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
         }
 
-        PbRow pbr = new PbRow(null, surl, sname, stype, myid, mypw, rd.getTime(), memo);
+        PbApp app = (PbApp) edMyPw.getContext().getApplicationContext();
+        byte[] pkBytes = app.getPkBytes();
+
+        String encId = PbCryptHelper.encData(myid, pkBytes);
+        String encPw = PbCryptHelper.encData(mypw, pkBytes);
+
+        PbRow pbr = new PbRow(null, surl, sname, stype, encId, encPw, rd.getTime(), System.currentTimeMillis(), memo);
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
         pdi.updateRow(pbr);
 

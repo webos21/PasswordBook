@@ -15,6 +15,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
+import com.gmail.webos21.passwordbook.db.PbDbInterface;
+import com.gmail.webos21.passwordbook.db.PbDbManager;
+import com.gmail.webos21.passwordbook.db.PbKeyChanger;
+
 public class AuthConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText edPassNew;
@@ -108,8 +113,24 @@ public class AuthConfigActivity extends AppCompatActivity implements View.OnClic
         SharedPreferences pref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
         SharedPreferences.Editor prefEdit = pref.edit();
 
-        prefEdit.putString(Consts.PREF_PASSKEY, p1);
+        String newPasskey = PbCryptHelper.makeSha256Base64(p1);
+
+        prefEdit.putString(Consts.PREF_PASSKEY, newPasskey);
         prefEdit.commit();
+
+        PbApp app = (PbApp) tvMessage.getContext().getApplicationContext();
+
+        byte[] oldKey = app.getPkBytes();
+        byte[] newKey = PbCryptHelper.restorePkBytes(newPasskey);
+        if (oldKey != null) {
+            PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
+            new PbKeyChanger(pdi, oldKey, newKey, new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(tvMessage.getContext(), "New key is applyed!!!", Toast.LENGTH_LONG);
+                }
+            }).execute();
+        }
 
         Intent i = new Intent();
         setResult(Activity.RESULT_OK, i);

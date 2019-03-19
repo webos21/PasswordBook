@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.gmail.webos21.passwordbook.Consts;
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,12 +20,14 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
 
     private PbDbInterface pdi;
     private File csvFile;
+    private byte[] pkBytes;
 
     private Runnable postRun;
 
-    public PbImporter(PbDbInterface pdi, File csvFile, Runnable postRun) {
+    public PbImporter(PbDbInterface pdi, File csvFile, byte[] pkBytes, Runnable postRun) {
         this.pdi = pdi;
         this.csvFile = csvFile;
+        this.pkBytes = pkBytes;
         this.postRun = postRun;
     }
 
@@ -39,7 +42,7 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
                 if (Consts.DEBUG) {
                     Log.i(TAG, "[FileRead] " + s);
                 }
-                processLine(pdi, s);
+                processLine(pdi, s, pkBytes);
             }
 
             bri.close();
@@ -69,12 +72,13 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
         postRun.run();
     }
 
-    private void processLine(PbDbInterface pdi, String s) {
+    private void processLine(PbDbInterface pdi, String s, byte[] encKey) {
         String[] strArr = s.split(",");
 
         Long id = null;
         String surl = null;
         Date regdate = null;
+        Date fixdate = null;
         String stype = null;
         String myid = null;
         String mypw = null;
@@ -92,9 +96,10 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
                     e.printStackTrace();
                 }
             }
+            fixdate = new Date();
             stype = strArr[2];
-            myid = strArr[3];
-            mypw = strArr[4];
+            myid = PbCryptHelper.encData(strArr[3], encKey);
+            mypw = PbCryptHelper.encData(strArr[4], encKey);
             sname = strArr[5];
             memo = ("null".equals(strArr[6]) ? "" : strArr[6]);
         } else if (strArr.length == 8) {
@@ -102,8 +107,8 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
             surl = strArr[1];
             sname = strArr[2];
             stype = strArr[3];
-            myid = strArr[4];
-            mypw = strArr[5];
+            myid = PbCryptHelper.encData(strArr[4], encKey);
+            mypw = PbCryptHelper.encData(strArr[5], encKey);
             if ("null".equals(strArr[6])) {
                 regdate = new Date(0);
             } else {
@@ -113,12 +118,39 @@ public class PbImporter extends AsyncTask<Void, Void, Void> {
                     e.printStackTrace();
                 }
             }
+            fixdate = new Date();
             memo = ((strArr[7] == null || strArr[7].length() == 0 || "null".equals(strArr[7])) ? "" : strArr[7]);
+        } else if (strArr.length == 9) {
+            id = Long.parseLong(strArr[0]);
+            surl = strArr[1];
+            sname = strArr[2];
+            stype = strArr[3];
+            myid = PbCryptHelper.encData(strArr[4], encKey);
+            mypw = PbCryptHelper.encData(strArr[5], encKey);
+            if ("null".equals(strArr[6])) {
+                regdate = new Date(0);
+            } else {
+                try {
+                    regdate = Consts.SDF_DATE.parse(strArr[6]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            if ("null".equals(strArr[7])) {
+                fixdate = new Date();
+            } else {
+                try {
+                    fixdate = Consts.SDF_DATE.parse(strArr[7]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            memo = ((strArr[8] == null || strArr[8].length() == 0 || "null".equals(strArr[8])) ? "" : strArr[8]);
         } else {
             return;
         }
 
-        PbRow pbrow = new PbRow(id, surl, sname, stype, myid, mypw, regdate.getTime(), memo);
+        PbRow pbrow = new PbRow(id, surl, sname, stype, myid, mypw, regdate.getTime(), fixdate.getTime(), memo);
         pdi.updateRow(pbrow);
     }
 }

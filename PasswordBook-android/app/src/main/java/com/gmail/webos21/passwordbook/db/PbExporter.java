@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.gmail.webos21.passwordbook.Consts;
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,12 +19,14 @@ public class PbExporter extends AsyncTask<Void, Void, Void> {
 
     private PbDbInterface pdi;
     private File csvFile;
+    private byte[] pkBytes;
 
     private Runnable postRun;
 
-    public PbExporter(PbDbInterface pdi, File csvFile, Runnable postRun) {
+    public PbExporter(PbDbInterface pdi, File csvFile, byte[] pkBytes, Runnable postRun) {
         this.pdi = pdi;
         this.csvFile = csvFile;
+        this.pkBytes = pkBytes;
         this.postRun = postRun;
     }
 
@@ -36,7 +39,7 @@ public class PbExporter extends AsyncTask<Void, Void, Void> {
         try {
             bwo = new BufferedWriter(new FileWriter(csvFile));
             for (PbRow pbrow : pblist) {
-                String l = makeLine(pbrow, sb);
+                String l = makeLine(pbrow, sb, pkBytes);
                 if (Consts.DEBUG) {
                     Log.i(TAG, l);
                 }
@@ -71,16 +74,20 @@ public class PbExporter extends AsyncTask<Void, Void, Void> {
         postRun.run();
     }
 
-    private String makeLine(PbRow pbRow, StringBuffer sb) {
+    private String makeLine(PbRow pbRow, StringBuffer sb, byte[] decKey) {
         sb.delete(0, sb.length());
+
+        String decId = PbCryptHelper.decData(pbRow.getMyId(), decKey);
+        String decPw = PbCryptHelper.decData(pbRow.getMyPw(), decKey);
 
         sb.append(Long.toString(pbRow.getId())).append(',');
         sb.append(pbRow.getSiteUrl()).append(',');
         sb.append(pbRow.getSiteName()).append(',');
         sb.append(pbRow.getSiteType()).append(',');
-        sb.append(pbRow.getMyId()).append(',');
-        sb.append(pbRow.getMyPw()).append(',');
+        sb.append(decId).append(',');
+        sb.append(decPw).append(',');
         sb.append(Consts.SDF_DATE.format(pbRow.getRegDate())).append(',');
+        sb.append(Consts.SDF_DATE.format(pbRow.getFixDate())).append(',');
         String memo = (pbRow.getMemo() == null || pbRow.getMemo().length() == 0) ? "null" : pbRow.getMemo();
         sb.append(memo);
         sb.append("\r\n");

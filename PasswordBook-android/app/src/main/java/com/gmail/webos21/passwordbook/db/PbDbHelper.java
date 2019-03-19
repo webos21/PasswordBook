@@ -27,6 +27,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             /* Indent */"	myid             VARCHAR(100), " +
             /* Indent */"	mypw             VARCHAR(100), " +
             /* Indent */"	reg_date         INTEGER, " +
+            /* Indent */"	fix_date         INTEGER, " +
             /* Indent */"	memo             VARCHAR(4000) " +
             /* Indent */");";
 
@@ -82,7 +83,8 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
                     /* myid ----------- */rset.getString(4),
                     /* mypw ----------- */rset.getString(5),
                     /* reg_date ------- */rset.getLong(6),
-                    /* memo ----------- */rset.getString(7));
+                    /* fix_date ------- */rset.getLong(7),
+                    /* memo ----------- */rset.getString(8));
             aList.add(aRow);
         } while (rset.moveToNext());
 
@@ -124,7 +126,8 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
                     /* myid ----------- */rset.getString(4),
                     /* mypw ----------- */rset.getString(5),
                     /* reg_date ------- */rset.getLong(6),
-                    /* memo ----------- */rset.getString(7));
+                    /* fix_date ------- */rset.getLong(7),
+                    /* memo ----------- */rset.getString(8));
             aList.add(aRow);
         } while (rset.moveToNext());
 
@@ -153,7 +156,8 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
                 /* myid ----------- */rset.getString(4),
                 /* mypw ----------- */rset.getString(5),
                 /* reg_date ------- */rset.getLong(6),
-                /* memo ----------- */rset.getString(7));
+                /* fix_date ------- */rset.getLong(7),
+                /* memo ----------- */rset.getString(8));
         rset.close();
         db.close();
         return aRow;
@@ -178,6 +182,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             cv.put("myid", newRow.getMyId());
             cv.put("mypw", newRow.getMyPw());
             cv.put("reg_date", newRow.getRegDate().getTime());
+            cv.put("fix_date", newRow.getFixDate().getTime());
             cv.put("memo", newRow.getMemo());
             db.insert(TB_PASSWORD_BOOK, null, cv);
         } else {
@@ -188,6 +193,7 @@ public class PbDbHelper extends SQLiteOpenHelper implements PbDbInterface {
             cv.put("myid", newRow.getMyId());
             cv.put("mypw", newRow.getMyPw());
             cv.put("reg_date", newRow.getRegDate().getTime());
+            cv.put("fix_date", newRow.getFixDate().getTime());
             cv.put("memo", newRow.getMemo());
             db.update(TB_PASSWORD_BOOK, cv, " id = ? ",
                     new String[]{Long.toString(newRow.getId())});

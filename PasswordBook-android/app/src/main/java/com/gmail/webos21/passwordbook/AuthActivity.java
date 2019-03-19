@@ -18,12 +18,13 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 import com.gmail.webos21.passwordbook.keypad.KeypadAdapter;
 import com.gmail.webos21.passwordbook.keypad.KeypadButton;
 
 public class AuthActivity extends AppCompatActivity {
 
-    private String PASS_KEY;
+    private byte[] pkBytes;
 
     private View layoutView;
 
@@ -74,7 +75,8 @@ public class AuthActivity extends AppCompatActivity {
         gvInputPad.setAdapter(mKeypadAdapter);
 
         SharedPreferences shpref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
-        PASS_KEY = shpref.getString(Consts.PREF_PASSKEY, "000000");
+        String passkey = shpref.getString(Consts.PREF_PASSKEY, "000000");
+        pkBytes = PbCryptHelper.restorePkBytes(passkey);
     }
 
     @Override
@@ -214,7 +216,7 @@ public class AuthActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            if (PASS_KEY.equals(inputPass)) {
+            if (PbCryptHelper.checkPasskey(inputPass, pkBytes)) {
                 Intent i = new Intent();
                 setResult(Activity.RESULT_OK, i);
                 finish();

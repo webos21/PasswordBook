@@ -1,6 +1,8 @@
 package com.gmail.webos21.passwordbook;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -29,8 +31,7 @@ import android.widget.Toast;
 
 import com.gmail.webos21.android.patch.PRNGFixes;
 import com.gmail.webos21.android.widget.ChooseFileDialog;
-import com.gmail.webos21.crypto.Base64WebSafe;
-import com.gmail.webos21.crypto.CryptoHelper;
+import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 import com.gmail.webos21.passwordbook.db.PbDbInterface;
 import com.gmail.webos21.passwordbook.db.PbDbManager;
 import com.gmail.webos21.passwordbook.db.PbExporter;
@@ -39,9 +40,6 @@ import com.gmail.webos21.passwordbook.db.PbRow;
 import com.gmail.webos21.passwordbook.db.PbRowAdapter;
 
 import java.io.File;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -97,31 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FloatingActionButton fabExportCsv = (FloatingActionButton) findViewById(R.id.fab_export_csv);
         fabExportCsv.setOnClickListener(this);
 
-        // Check App Key
+        // Get Shared Preferences
         SharedPreferences pref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
-        String appkey = pref.getString(Consts.PREF_APPKEY, "");
-        if (appkey == null || appkey.length() == 0) {
-            SecretKey sk = CryptoHelper.genAESKey();
-            if (Consts.DEBUG) {
-                Log.i(TAG, "sk = " + sk.toString());
-            }
-            String savekey = Base64WebSafe.encode(sk.getEncoded());
-            if (Consts.DEBUG) {
-                Log.i(TAG, "savekey = " + savekey);
-            }
-            SharedPreferences.Editor shEdit = pref.edit();
-            shEdit.putString(Consts.PREF_APPKEY, savekey);
-            shEdit.commit();
-        } else {
-            if (Consts.DEBUG) {
-                Log.i(TAG, "appkey = " + appkey);
-            }
-            byte[] decKey = Base64WebSafe.decode(appkey);
-            SecretKey sk = new SecretKeySpec(decKey, 0, decKey.length, "AES");
-            if (Consts.DEBUG) {
-                Log.i(TAG, "sk = " + sk.toString());
-            }
-        }
 
         // Set Views
         boolean bIconShow = pref.getBoolean(Consts.PREF_SHOW_ICON, false);
@@ -163,14 +138,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i(TAG, "onStart!!!!!!!!!!!!!");
         }
 
+        // Check the Passkey
         SharedPreferences pref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
         String passkey = pref.getString(Consts.PREF_PASSKEY, "");
         if (passkey == null || passkey.length() == 0) {
             Intent i = new Intent(this, AuthConfigActivity.class);
             startActivityForResult(i, Consts.ACTION_PASS_CFG);
             return;
+        } else {
+            PbApp app = (PbApp) getApplicationContext();
+            if (app.getPkBytes() == null) {
+                byte[] pkBytes = PbCryptHelper.restorePkBytes(passkey);
+                app.setPkBytes(pkBytes);
+            }
         }
 
+        // Check the flag of LOGIN
         if (!loginFlag) {
             Intent i = new Intent(this, AuthActivity.class);
             startActivityForResult(i, Consts.ACTION_LOGIN);
@@ -192,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pblist = (ListView) findViewById(R.id.lv_container);
         pblist.setAdapter(pbAdapter);
         pblist.setOnItemClickListener(new PbRowClickedListener());
+        pblist.setOnItemLongClickListener(new PbRowLongClickedListener());
 
         // Set Views
         tvTotalSite.setText(getResources().getString(R.string.cfg_total_item) + pbAdapter.getCount());
@@ -286,6 +270,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void refreshListView() {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String totalSite = MainActivity.this.getResources().getString(R.string.cfg_total_item) + MainActivity.this.pbAdapter.getCount();
+                MainActivity.this.tvTotalSite.setText(totalSite);
+                MainActivity.this.pbAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     private void showFileDialog() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -312,11 +307,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        PbApp app = (PbApp) getApplicationContext();
+        byte[] pkBytes = app.getPkBytes();
+
         String mountPoint = Environment.getExternalStorageDirectory().toString();
         File csvFile = new File(mountPoint + "/Download", "exp.csv");
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
 
-        new PbExporter(pdi, csvFile, new Runnable() {
+        new PbExporter(pdi, csvFile, pkBytes, new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, "File is exported!!", Toast.LENGTH_SHORT).show();
@@ -329,9 +327,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public boolean onNavigationItemSelected(MenuItem item) {
             int id = item.getItemId();
             switch (id) {
-                case R.id.nav_cur_pos:
-                    break;
-
                 case R.id.nav_settings: {
                     Intent i = new Intent(MainActivity.this, AuthConfigActivity.class);
                     MainActivity.this.startActivityForResult(i, Consts.ACTION_PASS_CFG);
@@ -379,13 +374,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.i(TAG, "url = " + pbrow.getSiteUrl());
                 }
                 Intent i = new Intent(MainActivity.this, PbEditActivity.class);
-                i.putExtra(Consts.EXTRA_ID, pbrow.getId());
+                i.putExtra(Consts.EXTRA_ARG_ID, pbrow.getId());
                 MainActivity.this.startActivityForResult(i, Consts.ACTION_MODIFY);
             } else {
                 if (Consts.DEBUG) {
                     Log.i(TAG, "o is not PbRow!!!!!!");
                 }
             }
+        }
+    }
+
+    private class PbRowLongClickedListener implements AdapterView.OnItemLongClickListener {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            Object o = parent.getItemAtPosition(position);
+            if (o instanceof PbRow) {
+                final PbRow pbrow = (PbRow) o;
+                if (Consts.DEBUG) {
+                    Log.i(TAG, "o is PbRow!!!!!!");
+                    Log.i(TAG, "id = " + pbrow.getId());
+                    Log.i(TAG, "name = " + pbrow.getSiteName());
+                    Log.i(TAG, "url = " + pbrow.getSiteUrl());
+                }
+
+                String popupTitle = MainActivity.this.getResources().getString(R.string.pbp_delete);
+                String popupMessage = MainActivity.this.getResources().getString(R.string.pbp_delete_msg);
+                popupMessage += "\n [" + pbrow.getSiteType() + "] " + pbrow.getSiteName();
+
+                String txtDelete = MainActivity.this.getResources().getString(R.string.delete);
+                String txtCancel = MainActivity.this.getResources().getString(R.string.cancel);
+
+                AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
+                adBuilder.setTitle(popupTitle);
+                adBuilder.setMessage(popupMessage);
+                adBuilder.setPositiveButton(txtDelete,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
+                                pdi.deleteRow(pbrow);
+                                MainActivity.this.refreshListView();
+                            }
+                        });
+                adBuilder.setNegativeButton(txtCancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // Nothing to do
+                            }
+                        });
+                adBuilder.create().show();
+            } else {
+                if (Consts.DEBUG) {
+                    Log.i(TAG, "o is not PbRow!!!!!!");
+                }
+            }
+
+            return true;
         }
     }
 
@@ -415,11 +460,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private class CsvFileSelectedListener implements ChooseFileDialog.FileChosenListener {
         @Override
         public void onFileChosen(File chosenFile) {
+            PbApp app = (PbApp) MainActivity.this.getApplicationContext();
+            byte[] pkBytes = app.getPkBytes();
             PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
-            new PbImporter(pdi, chosenFile, new Runnable() {
+            new PbImporter(pdi, chosenFile, pkBytes, new Runnable() {
                 @Override
                 public void run() {
-                    MainActivity.this.pbAdapter.notifyDataSetChanged();
+                    Toast.makeText(MainActivity.this, "File is imported!!", Toast.LENGTH_SHORT).show();
+                    MainActivity.this.refreshListView();
                 }
             }).execute();
         }

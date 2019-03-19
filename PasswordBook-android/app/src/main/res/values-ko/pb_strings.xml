@@ -6,6 +6,8 @@
     <string name="navigation_drawer_close">내비 메뉴 닫기</string>
 
     <string name="search">검색</string>
+    <string name="delete">삭제</string>
+    <string name="cancel">취소</string>
 
     <string name="auth_title">사용자 인증</string>
     <string name="auth_message">비밀번호를 입력해 주세요.</string>
@@ -19,7 +21,10 @@
     <string name="auth_cfg_save">저장</string>
 
     <string name="cfg_icon_view">아이콘 보기</string>
-    <string name="cfg_total_item">총 갯수 : </string>
+    <string name="cfg_total_item">총 갯수 :&#160;</string>
+
+    <string name="pbp_delete">항목 삭제</string>
+    <string name="pbp_delete_msg">다음 항목을 정말로 삭제할까요?</string>
 
     <string name="pbe_title_add">계정 정보 추가</string>
     <string name="pbe_title_change">계정 정보 변경</string>
@@ -31,6 +36,7 @@
     <string name="pbe_myid">아이디</string>
     <string name="pbe_mypw">비밀번호</string>
     <string name="pbe_regday">등록일시</string>
+    <string name="pbe_fixday">최종수정</string>
     <string name="pbe_memo">메모</string>
     <string name="pbe_add">추가</string>
     <string name="pbe_modify">변경</string>

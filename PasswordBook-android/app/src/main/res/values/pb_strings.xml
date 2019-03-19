@@ -6,6 +6,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="search">Search</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 
     <string name="auth_title">User Auth</string>
     <string name="auth_message">Enter your passcode.</string>
@@ -19,7 +21,10 @@
     <string name="auth_cfg_save">SAVE</string>
 
     <string name="cfg_icon_view">Show Icon</string>
-    <string name="cfg_total_item">Total : </string>
+    <string name="cfg_total_item">Total :&#160;</string>
+
+    <string name="pbp_delete">Delete Information</string>
+    <string name="pbp_delete_msg">Do you want really delete below item?</string>
 
     <string name="pbe_title_add">Info Add</string>
     <string name="pbe_title_change">Info Change</string>
@@ -31,6 +36,7 @@
     <string name="pbe_myid">ID</string>
     <string name="pbe_mypw">PW</string>
     <string name="pbe_regday">Reg. Date</string>
+    <string name="pbe_fixday">Fix. Date</string>
     <string name="pbe_memo">Memo</string>
     <string name="pbe_add">ADD</string>
     <string name="pbe_modify">CHANGE</string>
