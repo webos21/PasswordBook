@@ -72,7 +72,7 @@ public class PbRowAdapter extends BaseAdapter {
 
         // 아이템 내 각 위젯에 데이터 반영
         if (bShowIcon) {
-            imgLoader.DisplayImage(pbData.getSiteUrl() + "/favicon.ico", iconImageView);
+            imgLoader.DisplayImage("http://www.google.com/s2/favicons?domain_url=" + pbData.getSiteUrl(), iconImageView);
         } else {
             iconImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_gt));
         }
@@ -80,6 +80,10 @@ public class PbRowAdapter extends BaseAdapter {
         descTextView.setText(pbData.getSiteUrl());
 
         return convertView;
+    }
+
+    public void refresh() {
+        notifyDataSetChanged();
     }
 
     public void searchItems(String w) {

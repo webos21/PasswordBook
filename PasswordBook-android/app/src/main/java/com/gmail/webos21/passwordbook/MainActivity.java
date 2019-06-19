@@ -105,6 +105,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cbIcon.setOnCheckedChangeListener(new ShowConfigListener());
 
         tvTotalSite = (TextView) findViewById(R.id.tv_total_site);
+
+        // Set Main-ListView
+        pbAdapter = new PbRowAdapter(this, pref.getBoolean(Consts.PREF_SHOW_ICON, false));
+        pblist = (ListView) findViewById(R.id.lv_container);
+        pblist.setAdapter(pbAdapter);
+        pblist.setOnItemClickListener(new PbRowClickedListener());
+        pblist.setOnItemLongClickListener(new PbRowLongClickedListener());
+
+        // Set Views
+        tvTotalSite.setText(getResources().getString(R.string.cfg_total_item) + pbAdapter.getCount());
     }
 
     @Override
@@ -173,16 +183,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Consts.PERM_REQ_EXTERNAL_STORAGE);
             return;
         }
-
-        // Set Main-ListView
-        pbAdapter = new PbRowAdapter(this, pref.getBoolean(Consts.PREF_SHOW_ICON, false));
-        pblist = (ListView) findViewById(R.id.lv_container);
-        pblist.setAdapter(pbAdapter);
-        pblist.setOnItemClickListener(new PbRowClickedListener());
-        pblist.setOnItemLongClickListener(new PbRowLongClickedListener());
-
-        // Set Views
-        tvTotalSite.setText(getResources().getString(R.string.cfg_total_item) + pbAdapter.getCount());
     }
 
     @Override
@@ -262,11 +262,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (requestCode == Consts.ACTION_ADD) {
             if (resultCode == RESULT_OK) {
+                this.pbAdapter.refresh();
                 loginFlag = true;
             }
         }
         if (requestCode == Consts.ACTION_MODIFY) {
             if (resultCode == RESULT_OK) {
+                this.pbAdapter.refresh();
                 loginFlag = true;
             }
         }
@@ -448,13 +450,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public boolean onQueryTextSubmit(String query) {
-            this.myAdapter.searchItems(query);
-            return true;
+            if (this.myAdapter != null) {
+                this.myAdapter.searchItems(query);
+                return true;
+            }
+            return false;
         }
 
         @Override
         public boolean onQueryTextChange(String newText) {
-            if (newText == null || newText.length() == 0) {
+            if ((this.myAdapter != null) && (newText == null || newText.length() == 0)) {
                 this.myAdapter.searchAll();
                 return true;
             }
