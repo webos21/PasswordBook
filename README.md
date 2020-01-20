@@ -13,4 +13,4 @@ But, I need the more simple one.
 
 ### To-Do
 
-* Implement the basic functionality
+* Add the web-access functionality with NanoHTTPD
