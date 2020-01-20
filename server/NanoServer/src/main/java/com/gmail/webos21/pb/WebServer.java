@@ -17,31 +17,11 @@ import java.util.StringTokenizer;
 
 import fi.iki.elonen.NanoHTTPD;
 
-public class App extends NanoHTTPD {
-
-	private static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS, HEAD";
-
-	private static final int MAX_AGE = 42 * 60 * 60;
-
-	// explicitly relax visibility to package for tests purposes
-	final static String DEFAULT_ALLOWED_HEADERS = "origin,accept,content-type";
-
-	public final static String ACCESS_CONTROL_ALLOW_HEADER_PROPERTY_NAME = "AccessControlAllowHeader";
-
-	/**
-	 * Default Index file names.
-	 */
-	@SuppressWarnings("serial")
-	public static final List<String> INDEX_FILE_NAMES = new ArrayList<String>() {
-		{
-			add("index.html");
-			add("index.htm");
-		}
-	};
+public class WebServer extends NanoHTTPD {
 
 	protected List<File> rootDirs;
 
-	public App(String ipaddr, int port, File wwwroot) throws IOException {
+	public WebServer(String ipaddr, int port, File wwwroot) throws IOException {
 		super(ipaddr, port);
 
 		rootDirs = new ArrayList<File>(Collections.singletonList(wwwroot));
@@ -56,13 +36,14 @@ public class App extends NanoHTTPD {
 		mimeTypes().put("svg", "image/svg+xml");
 
 		start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+
 		System.out.println("\nRunning! Point your browsers to http://" + ipaddr + ":" + port + "/ \n");
 	}
 
 	@Override
 	public Response serve(IHTTPSession session) {
 		Map<String, String> header = session.getHeaders();
-		Map<String, String> parms = session.getParms();
+		Map<String, List<String>> parms = session.getParameters();
 		String uri = session.getUri();
 
 		if (Consts.DEBUG) {
@@ -76,7 +57,7 @@ public class App extends NanoHTTPD {
 			e = parms.keySet().iterator();
 			while (e.hasNext()) {
 				String value = e.next();
-				System.out.println("  PRM: '" + value + "' = '" + parms.get(value) + "'");
+				System.out.println("  PRM: '" + value + "' = '" + parms.get(value).get(0) + "'");
 			}
 		}
 
@@ -225,7 +206,7 @@ public class App extends NanoHTTPD {
 	}
 
 	private String findIndexFileInDirectory(File directory) {
-		for (String fileName : INDEX_FILE_NAMES) {
+		for (String fileName : Consts.INDEX_FILE_NAMES) {
 			File indexFile = new File(directory, fileName);
 			if (indexFile.isFile()) {
 				return fileName;
@@ -258,8 +239,8 @@ public class App extends NanoHTTPD {
 		resp.addHeader("Access-Control-Allow-Origin", cors);
 		resp.addHeader("Access-Control-Allow-Headers", calculateAllowHeaders(queryHeaders));
 		resp.addHeader("Access-Control-Allow-Credentials", "true");
-		resp.addHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
-		resp.addHeader("Access-Control-Max-Age", "" + MAX_AGE);
+		resp.addHeader("Access-Control-Allow-Methods", Consts.ALLOWED_METHODS);
+		resp.addHeader("Access-Control-Max-Age", "" + Consts.MAX_AGE);
 
 		return resp;
 	}
@@ -280,21 +261,21 @@ public class App extends NanoHTTPD {
 		}
 
 		List<String> files = Arrays.asList(f.list(new FilenameFilter() {
-
 			@Override
 			public boolean accept(File dir, String name) {
 				return new File(dir, name).isFile();
 			}
 		}));
 		Collections.sort(files);
-		List<String> directories = Arrays.asList(f.list(new FilenameFilter() {
 
+		List<String> directories = Arrays.asList(f.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return new File(dir, name).isDirectory();
 			}
 		}));
 		Collections.sort(directories);
+
 		if (up != null || directories.size() + files.size() > 0) {
 			msg.append("<ul>");
 			if (up != null || directories.size() > 0) {
@@ -333,6 +314,7 @@ public class App extends NanoHTTPD {
 			msg.append("</ul>");
 		}
 		msg.append("</body></html>");
+
 		return msg.toString();
 	}
 
@@ -341,7 +323,7 @@ public class App extends NanoHTTPD {
 		// but NanoHttpd uses a Map whereas it is possible for requester to send
 		// several time the same header
 		// let's just use default values for this version
-		return System.getProperty(ACCESS_CONTROL_ALLOW_HEADER_PROPERTY_NAME, DEFAULT_ALLOWED_HEADERS);
+		return System.getProperty(Consts.ACCESS_CONTROL_ALLOW_HEADER_PROPERTY_NAME, Consts.DEFAULT_ALLOWED_HEADERS);
 	}
 
 	private Response respond(Map<String, String> headers, IHTTPSession session, String uri) {

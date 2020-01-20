@@ -80,11 +80,6 @@
 				<artifactId>nanohttpd</artifactId>
 				<version>${version.nanohttpd}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.nanohttpd</groupId>
-				<artifactId>nanohttpd-webserver</artifactId>
-				<version>${version.nanohttpd}</version>
-			</dependency>
 
 			<!-- JUnit -->
 			<dependency>
@@ -102,10 +97,6 @@
 		<dependency>
 			<groupId>org.nanohttpd</groupId>
 			<artifactId>nanohttpd</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.nanohttpd</groupId>
-			<artifactId>nanohttpd-webserver</artifactId>
 		</dependency>
 
 		<!-- JUnit for TEST -->
