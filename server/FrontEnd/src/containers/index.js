@@ -1,3 +1,6 @@
-import DefaultLayout from './DefaultLayout';
+// import DefaultLayout from './DefaultLayout';
+// export { DefaultLayout };
 
-export { DefaultLayout };
+import PbLayout from './PbLayout';
+
+export { PbLayout };
