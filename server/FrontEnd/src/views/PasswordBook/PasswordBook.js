@@ -12,11 +12,9 @@ import {
   InputGroupAddon,
   InputGroupText,
   Row,
-  Table,
-  Pagination, 
-  PaginationItem, 
-  PaginationLink
+  Table
 } from 'reactstrap';
+import Pager from '../../component/Pager/pager.js';
 
 class Forms extends Component {
   constructor(props) {
@@ -24,7 +22,19 @@ class Forms extends Component {
 
     this.toggle = this.toggle.bind(this);
     this.toggleFade = this.toggleFade.bind(this);
+    this.handlePageChanged = this.handlePageChanged.bind(this);
+
+    // create data set of random length
+    this.dataSet = [...Array(Math.ceil(500 + Math.random() * 500))].map(
+      (a, i) => "Record " + (i + 1)
+    );
+    this.pageSize = 10;
+    this.pagesCount = Math.ceil(this.dataSet.length / this.pageSize);
+
     this.state = {
+			totalPage: this.pagesCount,
+			currentPage: 0,
+			visiblePage: 7,
       collapse: true,
       fadeIn: true,
       timeout: 300
@@ -38,6 +48,41 @@ class Forms extends Component {
   toggleFade() {
     this.setState((prevState) => { return { fadeIn: !prevState }});
   }
+
+  renderData() {
+    const firstIdx = this.state.currentPage * this.state.visiblePage;
+    const lastIdx = this.state.currentPage * this.state.visiblePage + this.state.visiblePage;
+    const tableData = this.dataSet.slice(firstIdx, lastIdx);
+
+    console.log("firstIdx = " + firstIdx);
+    console.log("lastIdx = " + lastIdx);
+    console.log("tableData = " + tableData);
+
+    if (this.dataSet.length === 0) {
+      return (
+        <tr key="row-nodata">
+          <td colSpan="4" className="text-center align-middle" height="200">No Data</td>
+        </tr>
+      );
+    } else {
+      return tableData.map((data, index) => {
+        return (
+          <tr key={'row'+data}>
+            <td>{data}</td>
+            <td>2012/01/01</td>
+            <td>{index}</td>
+            <td>
+              <Badge color="success">Active</Badge>
+            </td>
+          </tr>
+        );
+      });
+    }
+  }
+
+  handlePageChanged(newPage) {
+		this.setState({ currentPage : newPage });
+	}
 
   render() {
     return (
@@ -76,7 +121,7 @@ class Forms extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Password List
+                <i className="fa fa-align-justify"></i> Password List (Total : {this.dataSet.length})
               </CardHeader>
               <CardBody>
                 <Table hover bordered striped responsive size="sm">
@@ -89,62 +134,16 @@ class Forms extends Component {
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td>Vishnu Serghei</td>
-                    <td>2012/01/01</td>
-                    <td>Member</td>
-                    <td>
-                      <Badge color="success">Active</Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Zbyněk Phoibos</td>
-                    <td>2012/02/01</td>
-                    <td>Staff</td>
-                    <td>
-                      <Badge color="danger">Banned</Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Einar Randall</td>
-                    <td>2012/02/01</td>
-                    <td>Admin</td>
-                    <td>
-                      <Badge color="secondary">Inactive</Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Félix Troels</td>
-                    <td>2012/03/01</td>
-                    <td>Member</td>
-                    <td>
-                      <Badge color="warning">Pending</Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Aulus Agmundr</td>
-                    <td>2012/01/21</td>
-                    <td>Staff</td>
-                    <td>
-                      <Badge color="success">Active</Badge>
-                    </td>
-                  </tr>
+                    {this.renderData()}
                   </tbody>
                 </Table>
-                <nav>
-                  <Pagination tag="justify-content-center">
-                  <PaginationItem><PaginationLink first tag="button">First</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-                    <PaginationItem active>
-                      <PaginationLink tag="button">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink last tag="button">Last</PaginationLink></PaginationItem>
-                  </Pagination>
-                </nav>
+                <Pager
+                  total={this.state.totalPage}
+                  current={this.state.currentPage}
+                  visiblePages={this.state.visiblePage}
+                  titles={{ first: 'First', last: 'Last' }}
+                  onPageChanged={this.handlePageChanged}
+                />
               </CardBody>
             </Card>
           </Col>
