@@ -27,6 +27,7 @@ public class WebServer extends NanoHTTPD {
 		staticRouter = new StaticRouter(wwwroot);
 		dynamicRouter = new DynamicRouter();
 
+		dynamicRouter.addDynamicPage("/login.do", LoginHandler.class);
 		dynamicRouter.addDynamicPage("/test.do", TestHandler.class);
 
 		mimeTypes().put("xhtml", "application/xhtml+xml");
