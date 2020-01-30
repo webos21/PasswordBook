@@ -14,9 +14,9 @@ import {
   Row,
   Table
 } from 'reactstrap';
-import Pager from '../../component/Pager/pager.js';
+import Pager from '../../components/Pager/pager.js';
 
-class Forms extends Component {
+class PasswordBook extends Component {
   constructor(props) {
     super(props);
 
@@ -154,4 +154,4 @@ class Forms extends Component {
   }
 }
 
-export default Forms;
+export default PasswordBook;

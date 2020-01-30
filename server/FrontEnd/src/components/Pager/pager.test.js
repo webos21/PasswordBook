@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Forms from './Forms';
 import {mount} from 'enzyme/build';
 
 it('renders without crashing', () => {
@@ -30,7 +29,7 @@ describe('toggle clicks', function() {
     wrapper.unmount()
   });
   it('fade without crashing', () => {
-    const wrapper = mount(<Forms />);
+    const wrapper = mount(<Pager />);
     let fade = wrapper.find('button.btn-close').at(0);
     fade.simulate('click');
     expect(wrapper.state().fadeIn).toEqual(false);

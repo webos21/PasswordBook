@@ -17,7 +17,7 @@ import {
 // sidebar nav config
 import navigation from '../../_pbnav';
 // routes config
-import routes from '../../routes';
+import routes from '../../pbroutes';
 
 const PbFooter = React.lazy(() => import('./PbFooter'));
 const PbHeader = React.lazy(() => import('./PbHeader'));
