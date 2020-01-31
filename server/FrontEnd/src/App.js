@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
+import Cookies from 'universal-cookie';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 // import { renderRoutes } from 'react-router-config';
 import './App.scss';
 
 const isAuthenticated = () => {
-  let data = JSON.parse(sessionStorage.getItem('userData'));
-  return (data !== null);
+  let cookies = new Cookies();
+  let data = cookies.get('X-PB-AUTH');
+  console.log(data);
+  return (data !== undefined && data !== null);
 }
 
 const UnauthenticatedRoute = ({ component: Component, ...rest }) => (
@@ -38,13 +41,13 @@ class App extends Component {
   render() {
     return (
       <HashRouter>
-          <React.Suspense fallback={loading()}>
-            <Switch>
-              <UnauthenticatedRoute exact path="/login" name="Login Page" component={PbLogin} />
-              <AuthenticatedRoute path="/" name="Home" component={PbLayout}/>} />
+        <React.Suspense fallback={loading()}>
+          <Switch>
+            <UnauthenticatedRoute exact path="/login" name="Login Page" component={PbLogin} />
+            <AuthenticatedRoute path="/" name="Home" component={PbLayout} />} />
               <Route exact path="/500" name="Page 500" component={Page500} />
-            </Switch>
-          </React.Suspense>
+          </Switch>
+        </React.Suspense>
       </HashRouter>
     );
   }

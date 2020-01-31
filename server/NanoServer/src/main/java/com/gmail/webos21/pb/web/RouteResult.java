@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.gmail.webos21.pb.web.NanoHTTPD.ContentType;
 import com.gmail.webos21.pb.web.NanoHTTPD.Response.IStatus;
@@ -93,4 +94,28 @@ public class RouteResult {
 		}
 	}
 
+	public static void print(RouteResult r) {
+		if (r == null) {
+			System.out.println("RouteResult = null");
+			return;
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("=================================\n");
+		sb.append("* Status   : ").append(r.getStatus().getDescription()).append('\n');
+		sb.append("* MimeType : ").append(r.getMimeType()).append('\n');
+		sb.append("---------------------------------\n");
+		sb.append("* Headers\n");
+		Map<String, String> headers = r.getHeaders();
+		Set<String> keys = headers.keySet();
+		for (String key : keys) {
+			sb.append("  ").append(key).append(": ").append(headers.get(key)).append('\n');
+		}
+		sb.append("---------------------------------\n");
+		sb.append("* BodyLen  : ").append(r.getContentLength()).append('\n');
+		sb.append("=================================\n");
+
+		System.out.println(sb.toString());
+	}
 }

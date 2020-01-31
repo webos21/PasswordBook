@@ -29,20 +29,30 @@ public class LoginHandler implements UriHandler {
 		RouteResult rr = null;
 		if ("test".equals(pbpwd)) {
 			sb.append("{\n");
-			sb.append("  \"result\": \"OK\"\n");
+			sb.append("  \"result\": \"OK\",\n");
+			sb.append("  \"auth\": {\n");
+			sb.append("    \"ckey\": \"X-PB-AUTH\",\n");
+			sb.append("    \"cval\": \"test\"\n");
+			sb.append("  }\n");
 			sb.append("}\n");
-			 rr = RouteResult.newRouteResult(Status.OK, "application/json", sb.toString());
+
+			rr = RouteResult.newRouteResult(Status.OK, "application/json", sb.toString());
+			rr.addHeader("Set-Cookies", "X-PB-AUTH=test; Domain=localhost:3000");
 		} else {
 			sb.append("{\n");
 			sb.append("  \"result\": \"FAIL\"\n");
 			sb.append("}\n");
-			 rr = RouteResult.newRouteResult(Status.UNAUTHORIZED, "application/json", sb.toString());
+			rr = RouteResult.newRouteResult(Status.UNAUTHORIZED, "application/json", sb.toString());
+			rr.addHeader("Set-Cookies", "X-PB-AUTH=;");
 		}
 
 		rr.addHeader("Access-Control-Allow-Origin", "*");
 		rr.addHeader("Access-Control-Allow-Credentials", "true");
 		rr.addHeader("Access-Control-Allow-Methods", "GET,DELETE,POST,PUT,HEAD,OPTIONS");
 		rr.addHeader("Access-Control-Max-Age", "86400");
+
+		RouteResult.print(rr);
+		System.out.println(sb.toString());
 
 		return rr;
 	}

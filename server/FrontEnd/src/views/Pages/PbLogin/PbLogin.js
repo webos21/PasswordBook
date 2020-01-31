@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import Cookies from 'universal-cookie';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 
-class Login extends Component {
+class PbLogin extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -11,6 +12,7 @@ class Login extends Component {
     event.preventDefault();
 
     const data = new FormData(event.target);
+    const parentProps = this.props;
 
     fetch('http://0.0.0.0:28080/login.do', {
       method: 'POST',
@@ -26,6 +28,11 @@ class Login extends Component {
       console.log(error.message);
     }).then(function (resJson) {
       console.log(resJson.result);
+      if (resJson.auth && resJson.auth.ckey && resJson.auth.cval) {
+        let cookies = new Cookies();
+        cookies.set(resJson.auth.ckey, resJson.auth.cval);
+        parentProps.history.push('/');
+      }
     }).catch(function (error) {
       console.log("error---", error)
     });
@@ -52,11 +59,16 @@ class Login extends Component {
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input type="password" name="pbpwd" placeholder="Password"
-                        minLength="4" maxLength="16" tabIndex="0" autoFocus required />
+                          minLength="4" maxLength="16" tabIndex="0" autoFocus required />
                       </InputGroup>
                       <Row>
                         <Col xs="6">
                           <Button type="submit" color="primary" className="px-4">Login</Button>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="6">
+                          <div class="invalid-feedback"></div>
                         </Col>
                       </Row>
                     </Form>
@@ -84,4 +96,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default PbLogin;

@@ -2,6 +2,7 @@ import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
+import Cookies from 'universal-cookie';
 
 import {
   AppFooter,
@@ -28,7 +29,10 @@ class PbLayout extends Component {
 
   signOut(e) {
     e.preventDefault()
-    this.props.history.push('/login')
+
+    let cookies = new Cookies();
+    cookies.remove('X-PB-AUTH');
+    this.props.history.push('/login');
   }
 
   render() {

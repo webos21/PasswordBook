@@ -20,8 +20,7 @@ export default {
     },
     {
       name: 'Logout',
-      url: '#',
-      onClick: '{e => this.props.onLogout(e)}',
+      url: '/logout',
       icon: 'icon-lock',
       variant: 'danger',
     },
