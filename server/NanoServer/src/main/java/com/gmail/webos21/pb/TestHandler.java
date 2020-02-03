@@ -25,16 +25,19 @@ public class TestHandler implements UriHandler {
 			Map<String, String> files) {
 		System.out.println("URI : " + uri);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("<!doctype html><html lang=\"ko\"><head><title>Dynamic Test</title>");
-		sb.append("<body>Hello World!!</body></html>");
-
+		int dbVersion = -1;
 		Connection conn = H2Helper.getConnection(JDBC_URL, USER, PASS);
 		if (conn != null) {
-			boolean isUpdate = H2Helper.checkDbUpdate(conn, 1);
-			System.out.println("DB Update = " + isUpdate);
+			dbVersion = H2Helper.getVersion(conn);
+			System.out.println("DB Version = " + dbVersion);
 			H2Helper.releaseConnection(conn);
 		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("<!doctype html><html lang=\"ko\"><head><title>Dynamic Test</title>");
+		sb.append("<body>Hello World!!<br/>");
+		sb.append("DB Version : ").append(dbVersion);
+		sb.append("</body></html>");
 
 		return RouteResult.newRouteResult(Status.OK, NanoHTTPD.MIME_HTML, sb.toString());
 	}

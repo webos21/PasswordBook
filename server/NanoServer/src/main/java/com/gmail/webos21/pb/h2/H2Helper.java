@@ -2,6 +2,7 @@ package com.gmail.webos21.pb.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,11 +42,31 @@ public class H2Helper {
 		return conn;
 	}
 
-	public static boolean checkDbUpdate(Connection conn, int currentVersion) {
-		boolean isUpdate = false;
+	public static boolean isReadOnly(Connection conn) {
+		boolean readOnly = true;
+		try {
+			readOnly = conn.isReadOnly();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return readOnly;
+	}
+
+	public static boolean isValid(Connection conn) {
+		boolean valid = true;
+		try {
+			valid = conn.isValid(3);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return valid;
+	}
+
+	public static int getVersion(Connection conn) {
+		int dbVersion = -1;
 
 		if (conn == null) {
-			return false;
+			return dbVersion;
 		}
 
 		Statement stmt = null;
@@ -55,8 +76,6 @@ public class H2Helper {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(TB_VERSION_CREATE);
 
-			int dbVersion = -1;
-
 			rs = stmt.executeQuery(TB_VERSION_CHECK);
 			while (rs.next()) {
 				// Retrieve by column name
@@ -64,12 +83,7 @@ public class H2Helper {
 			}
 			if (dbVersion < 0) {
 				stmt.executeUpdate(TB_VERSION_INIT);
-				isUpdate = true;
-			} else {
-				if (dbVersion != currentVersion) {
-					isUpdate = true;
-					stmt.executeUpdate("UPDATE " + TB_VERSION + " SET version = " + currentVersion + ";");
-				}
+				dbVersion = 0;
 			}
 
 			rs.close();
@@ -98,7 +112,7 @@ public class H2Helper {
 			}
 		}
 
-		return isUpdate;
+		return dbVersion;
 	}
 
 	public static void dbUpdateDone(Connection conn, int currentVersion) {
@@ -140,6 +154,20 @@ public class H2Helper {
 		}
 
 		return stmt;
+	}
+
+	public static PreparedStatement preparedStatement(Connection conn, String sql) {
+		PreparedStatement pstmt = null;
+
+		if (conn != null) {
+			try {
+				pstmt = conn.prepareStatement(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return pstmt;
 	}
 
 	public static void closeStatement(Statement stmt) {

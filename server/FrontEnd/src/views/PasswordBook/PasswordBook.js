@@ -6,7 +6,7 @@ import {
   CardBody,
   CardHeader,
   Col,
-  FormGroup,
+  Form,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -22,19 +22,20 @@ class PasswordBook extends Component {
 
     this.toggle = this.toggle.bind(this);
     this.toggleFade = this.toggleFade.bind(this);
+
+    this.handleSearchGo = this.handleSearchGo.bind(this);
     this.handlePageChanged = this.handlePageChanged.bind(this);
 
     // create data set of random length
-    this.dataSet = [...Array(Math.ceil(500 + Math.random() * 500))].map(
-      (a, i) => "Record " + (i + 1)
-    );
+    this.dataSet = [];
     this.pageSize = 10;
     this.pagesCount = Math.ceil(this.dataSet.length / this.pageSize);
 
     this.state = {
-			totalPage: this.pagesCount,
-			currentPage: 0,
-			visiblePage: 7,
+      totalPage: this.pagesCount,
+      currentPage: 0,
+      visiblePage: 10,
+      keywordError: "",
       collapse: true,
       fadeIn: true,
       timeout: 300
@@ -46,7 +47,7 @@ class PasswordBook extends Component {
   }
 
   toggleFade() {
-    this.setState((prevState) => { return { fadeIn: !prevState }});
+    this.setState((prevState) => { return { fadeIn: !prevState } });
   }
 
   renderData() {
@@ -54,9 +55,9 @@ class PasswordBook extends Component {
     const lastIdx = this.state.currentPage * this.state.visiblePage + this.state.visiblePage;
     const tableData = this.dataSet.slice(firstIdx, lastIdx);
 
-    console.log("firstIdx = " + firstIdx);
-    console.log("lastIdx = " + lastIdx);
-    console.log("tableData = " + tableData);
+    // console.log("firstIdx = " + firstIdx);
+    // console.log("lastIdx = " + lastIdx);
+    // console.log("tableData = " + tableData);
 
     if (this.dataSet.length === 0) {
       return (
@@ -67,7 +68,7 @@ class PasswordBook extends Component {
     } else {
       return tableData.map((data, index) => {
         return (
-          <tr key={'row'+data}>
+          <tr key={'row' + data}>
             <td>{data}</td>
             <td>2012/01/01</td>
             <td>{index}</td>
@@ -80,9 +81,58 @@ class PasswordBook extends Component {
     }
   }
 
+  componentDidMount() {
+    const parentState = this;
+
+    fetch('http://0.0.0.0:28080/pwdata.do?q=', {
+      method: 'GET',
+      credentials: 'include',
+    }).then(function (res) {
+      if (!res.ok) {
+        throw Error("서버응답 : " + res.statusText + "(" + res.status + ")");
+      }
+      return res.json();
+    }).then(function (resJson) {
+      parentState.dataSet = resJson.data;
+      parentState.setState({ keywordError: '' })
+      console.log(resJson.result);
+    }).catch(function (error) {
+      parentState.setState({ keywordError: error.message })
+      console.log(error);
+    });
+  }
+
   handlePageChanged(newPage) {
-		this.setState({ currentPage : newPage });
-	}
+    this.setState({ currentPage: newPage });
+  }
+
+  handleSearchGo(event) {
+    event.preventDefault();
+
+    var searchKey = event.target.keyword;
+    if (searchKey.value === "") {
+      this.setState({ keywordError: "검색할 키워드를 입력해 주세요." });
+    }
+
+    const parentState = this;
+
+    fetch('http://0.0.0.0:28080/pwdata.do?q=' + searchKey.value, {
+      method: 'GET',
+      credentials: 'include',
+    }).then(function (res) {
+      if (!res.ok) {
+        throw Error("서버응답 : " + res.statusText + "(" + res.status + ")");
+      }
+      return res.json();
+    }).then(function (resJson) {
+      parentState.dataSet = resJson.data;
+      parentState.setState({ keywordError: '' })
+      console.log(resJson.result);
+    }).catch(function (error) {
+      parentState.setState({ keywordError: error.message })
+      console.log(error);
+    });
+  }
 
   render() {
     return (
@@ -97,19 +147,18 @@ class PasswordBook extends Component {
               <CardBody>
                 <Row>
                   <Col>
-                    <FormGroup>
-                      <div className="search">
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>Keyword</InputGroupText>
-                          </InputGroupAddon>
-                          <Input type="text" id="keyword" placeholder="Enter the search keyword" required />
-                          <InputGroupAddon addonType="append">
-                            <Button color="primary">Search</Button>
-                          </InputGroupAddon>
-                        </InputGroup>
-                      </div>
-                    </FormGroup>
+                    <Form onSubmit={this.handleSearchGo}>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>Keyword</InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="text" name="keyword" placeholder="Enter the search keyword" />
+                        <InputGroupAddon addonType="append">
+                          <Button type="submit" color="primary">Search</Button>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      <small id="keywordError" className="text-danger">{this.state.keywordError}</small>
+                    </Form>
                   </Col>
                 </Row>
               </CardBody>
@@ -126,12 +175,12 @@ class PasswordBook extends Component {
               <CardBody>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Date registered</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                  </tr>
+                    <tr>
+                      <th>Username</th>
+                      <th>Date registered</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {this.renderData()}

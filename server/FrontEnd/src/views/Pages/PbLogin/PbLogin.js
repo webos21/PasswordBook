@@ -1,44 +1,8 @@
 import React, { Component } from 'react';
-import Cookies from 'universal-cookie';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import { Button, Card, CardBody, CardGroup, Col, Container, Row } from 'reactstrap';
+import PbLoginForm from './PbLoginForm';
 
 class PbLogin extends Component {
-  constructor(props) {
-    super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-
-    const data = new FormData(event.target);
-    const parentProps = this.props;
-
-    fetch('http://0.0.0.0:28080/login.do', {
-      method: 'POST',
-      body: data,
-    }).then(function (res) {
-      // console.log(res.status);
-      // console.log(res.statusText);
-      // console.log(res.headers);
-      // console.log(res.url);
-
-      return res.json();
-    }, function (error) {
-      console.log(error.message);
-    }).then(function (resJson) {
-      console.log(resJson.result);
-      if (resJson.auth && resJson.auth.ckey && resJson.auth.cval) {
-        let cookies = new Cookies();
-        cookies.set(resJson.auth.ckey, resJson.auth.cval);
-        parentProps.history.push('/');
-      }
-    }).catch(function (error) {
-      console.log("error---", error)
-    });
-
-  }
-
   render() {
     return (
       <div className="app flex-row align-items-center">
@@ -48,30 +12,7 @@ class PbLogin extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form onSubmit={this.handleSubmit}>
-                      <h1>Login</h1>
-                      <p className="text-muted">Sign In to your PasswordBook</p>
-                      <br />
-                      <InputGroup className="mb-4">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="icon-lock"></i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input type="password" name="pbpwd" placeholder="Password"
-                          minLength="4" maxLength="16" tabIndex="0" autoFocus required />
-                      </InputGroup>
-                      <Row>
-                        <Col xs="6">
-                          <Button type="submit" color="primary" className="px-4">Login</Button>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs="6">
-                          <div class="invalid-feedback"></div>
-                        </Col>
-                      </Row>
-                    </Form>
+                    <PbLoginForm />
                   </CardBody>
                 </Card>
                 <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: '44%' }}>

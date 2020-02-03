@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import { Col, Container, Row } from 'reactstrap';
 
@@ -29,4 +30,4 @@ class PbLogout extends Component {
   }
 }
 
-export default PbLogout;
+export default withRouter(PbLogout);
