@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -15,6 +14,9 @@ import {
   Table
 } from 'reactstrap';
 import Pager from '../../components/Pager/pager.js';
+import PbFormAdd from './PbFormAdd.js';
+import PbFormEdit from './PbFormEdit.js';
+import PbFormDel from './PbFormDel.js';
 
 class PasswordBook extends Component {
   constructor(props) {
@@ -22,6 +24,8 @@ class PasswordBook extends Component {
 
     this.toggle = this.toggle.bind(this);
     this.toggleFade = this.toggleFade.bind(this);
+
+    this.dataChangedCallback = this.dataChangedCallback.bind(this);
 
     this.handleSearchGo = this.handleSearchGo.bind(this);
     this.handlePageChanged = this.handlePageChanged.bind(this);
@@ -50,6 +54,10 @@ class PasswordBook extends Component {
     this.setState((prevState) => { return { fadeIn: !prevState } });
   }
 
+  dataChangedCallback() {
+    this.requestFetch();
+  }
+
   renderData() {
     const firstIdx = this.state.currentPage * this.state.visiblePage;
     const lastIdx = this.state.currentPage * this.state.visiblePage + this.state.visiblePage;
@@ -68,12 +76,15 @@ class PasswordBook extends Component {
     } else {
       return tableData.map((data, index) => {
         return (
-          <tr key={'row' + data}>
-            <td>{data}</td>
-            <td>2012/01/01</td>
-            <td>{index}</td>
+          <tr key={'row' + data.id}>
+            <td>{data.siteName}</td>
+            <td>{data.siteType}</td>
+            <td><a href={data.siteUrl} target="_blank" rel="noopener noreferrer">{data.siteUrl}</a></td>
+            <td>{data.myId}</td>
             <td>
-              <Badge color="success">Active</Badge>
+              <PbFormEdit dataFromParent={data} />
+              &nbsp;
+              <PbFormDel dataFromParent={data} />
             </td>
           </tr>
         );
@@ -81,11 +92,16 @@ class PasswordBook extends Component {
     }
   }
 
-  componentDidMount() {
+  requestFetch(query) {
     const parentState = this;
+    const reqUri = 'http://localhost:28080/pwdata.do?q=' +
+      (query === null || query === undefined ? '' : query);
 
-    fetch('http://0.0.0.0:28080/pwdata.do?q=', {
+    fetch(reqUri, {
       method: 'GET',
+      headers: new Headers({
+        'Authorization': 'Basic ' + btoa('username:password'),
+      }),
       credentials: 'include',
     }).then(function (res) {
       if (!res.ok) {
@@ -100,6 +116,10 @@ class PasswordBook extends Component {
       parentState.setState({ keywordError: error.message })
       console.log(error);
     });
+  }
+
+  componentDidMount() {
+    this.requestFetch();
   }
 
   handlePageChanged(newPage) {
@@ -112,26 +132,9 @@ class PasswordBook extends Component {
     var searchKey = event.target.keyword;
     if (searchKey.value === "") {
       this.setState({ keywordError: "검색할 키워드를 입력해 주세요." });
+      return;
     }
-
-    const parentState = this;
-
-    fetch('http://0.0.0.0:28080/pwdata.do?q=' + searchKey.value, {
-      method: 'GET',
-      credentials: 'include',
-    }).then(function (res) {
-      if (!res.ok) {
-        throw Error("서버응답 : " + res.statusText + "(" + res.status + ")");
-      }
-      return res.json();
-    }).then(function (resJson) {
-      parentState.dataSet = resJson.data;
-      parentState.setState({ keywordError: '' })
-      console.log(resJson.result);
-    }).catch(function (error) {
-      parentState.setState({ keywordError: error.message })
-      console.log(error);
-    });
+    this.requestFetch(searchKey.value);
   }
 
   render() {
@@ -171,15 +174,17 @@ class PasswordBook extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> Password List (Total : {this.dataSet.length})
+                <PbFormAdd callbackFromParent={this.myCallback} />
               </CardHeader>
               <CardBody>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th>Username</th>
-                      <th>Date registered</th>
-                      <th>Role</th>
-                      <th>Status</th>
+                      <th>이름</th>
+                      <th>유형</th>
+                      <th>항목 URL</th>
+                      <th>ID</th>
+                      <th>Edit</th>
                     </tr>
                   </thead>
                   <tbody>
