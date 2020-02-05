@@ -34,9 +34,9 @@ public class H2Helper {
 			// STEP 2: Open a connection
 			conn = DriverManager.getConnection(jdbcUrl, user, pass);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		}
 
 		return conn;
@@ -142,6 +142,55 @@ public class H2Helper {
 		}
 	}
 
+	public static void beginTransaction(Connection conn) {
+		try {
+			conn.setAutoCommit(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void endTransaction(Connection conn) {
+		try {
+			conn.setAutoCommit(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean inTransaction(Connection conn) {
+		try {
+			return conn.getAutoCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static void setTransactionSuccessful(Connection conn) {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void commit(Connection conn) {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void rollback(Connection conn) {
+		try {
+			conn.rollback();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static Statement openStatement(Connection conn) {
 		Statement stmt = null;
 
@@ -161,13 +210,66 @@ public class H2Helper {
 
 		if (conn != null) {
 			try {
-				pstmt = conn.prepareStatement(sql);
+				pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 
 		return pstmt;
+	}
+
+	public static ResultSet executeQuery(PreparedStatement pstmt) {
+		ResultSet rset = null;
+
+		if (pstmt != null) {
+			try {
+				rset = pstmt.executeQuery();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return rset;
+	}
+
+	public static int executeUpdate(PreparedStatement pstmt) {
+		int rows = -1;
+
+		if (pstmt != null) {
+			try {
+				rows = pstmt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return rows;
+	}
+
+	public static ResultSet executeQuery(Statement stmt, String sql) {
+		ResultSet rset = null;
+
+		if (stmt != null && sql != null) {
+			try {
+				rset = stmt.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return rset;
+	}
+
+	public static void closeResultSet(ResultSet rset) {
+		if (rset != null) {
+			try {
+				rset.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rset = null;
+		}
 	}
 
 	public static void closeStatement(Statement stmt) {

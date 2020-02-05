@@ -109,8 +109,8 @@ public class PbRow {
     	sb.append("  \"myId\": \"").append(myId).append("\",\n");
     	sb.append("  \"myPw\": \"").append(myPw).append("\",\n");
     	sb.append("  \"regDate\": ").append(regDate.getTime()).append(",\n");
-    	sb.append("  \"fixDate\": ").append(fixDate).append(",\n");
-    	sb.append("  \"memo\": \"").append(memo).append("\",\n");
+    	sb.append("  \"fixDate\": ").append(fixDate.getTime()).append(",\n");
+    	sb.append("  \"memo\": \"").append(memo).append("\"\n");
     	sb.append('}').append('\n');
 
     	return sb.toString();

@@ -9,6 +9,7 @@ public class PbDbManager {
 	private PbDbHelper dbHelper;
 
 	private PbDbManager() {
+		this.dbHelper = new PbDbHelper(Consts.DB_FILE, Consts.DB_USER, Consts.DB_PASS, Consts.DB_VERSION);
 	}
 
 	public static PbDbManager getInstance() {
@@ -22,10 +23,6 @@ public class PbDbManager {
 			instance = new PbDbManager();
 		}
 		return instance;
-	}
-
-	public void init() {
-		this.dbHelper = new PbDbHelper(Consts.DB_FILE, Consts.DB_USER, Consts.DB_PASS, Consts.DB_VERSION);
 	}
 
 	public void destroy() {

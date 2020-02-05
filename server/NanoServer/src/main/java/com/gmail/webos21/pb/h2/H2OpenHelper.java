@@ -1,7 +1,6 @@
 package com.gmail.webos21.pb.h2;
 
 import java.io.File;
-import java.sql.Connection;
 
 import com.gmail.webos21.pb.db.Log;
 
@@ -15,7 +14,7 @@ public abstract class H2OpenHelper {
 	private final int mNewVersion;
 	private final int mMinimumSupportedVersion;
 
-	private Connection mConn;
+	private H2Database mDatabase;
 	private boolean mIsInitializing;
 
 	public H2OpenHelper(String filePath, String user, String pass, int version) {
@@ -43,26 +42,26 @@ public abstract class H2OpenHelper {
 		return user;
 	}
 
-	public Connection getWritableDatabase() {
+	public H2Database getWritableDatabase() {
 		synchronized (this) {
 			return getDatabaseLocked(true);
 		}
 	}
 
-	public Connection getReadableDatabase() {
+	public H2Database getReadableDatabase() {
 		synchronized (this) {
 			return getDatabaseLocked(false);
 		}
 	}
 
-	private Connection getDatabaseLocked(boolean writable) {
-		if (mConn != null) {
-			if (!H2Helper.isValid(mConn)) {
+	private H2Database getDatabaseLocked(boolean writable) {
+		if (mDatabase != null) {
+			if (!mDatabase.isOpen()) {
 				// Darn! The user closed the database by calling mDatabase.close().
-				mConn = null;
-			} else if (!writable || !H2Helper.isReadOnly(mConn)) {
+				mDatabase = null;
+			} else if (!writable || !mDatabase.isReadOnly()) {
 				// The database is already open for business.
-				return mConn;
+				return mDatabase;
 			}
 		}
 
@@ -70,39 +69,41 @@ public abstract class H2OpenHelper {
 			throw new IllegalStateException("getDatabase called recursively");
 		}
 
-		Connection conn = mConn;
+		H2Database db = mDatabase;
 		try {
 			mIsInitializing = true;
 
-			if (conn != null) {
-				if (writable && H2Helper.isReadOnly(conn)) {
-					H2Helper.releaseConnection(conn);
-					conn = H2Helper.getConnection("jdbc:h2:" + filePath, user, pass);
+			if (db != null) {
+				if (writable && db.isReadOnly()) {
+					db.reopenReadWrite();
 				}
 			} else if (filePath == null) {
-				conn = H2Helper.getConnection("jdbc:h2:mem:", user, pass);
+				db = H2Database.createInMemory(user, pass);
 			} else {
-				conn = H2Helper.getConnection("jdbc:h2:" + filePath, user, pass);
-				if (conn == null) {
-					Log.e(TAG, "Couldn't open " + filePath + " for writing (will try read-only)");
+				try {
+					db = H2Database.openDatabase(filePath, user, pass);
+				} catch (Exception ex) {
+					if (writable) {
+						throw ex;
+					}
+					Log.e(TAG, "Couldn't open " + filePath + " for writing (will try read-only):", ex);
 				}
 			}
 
-			onConfigure(conn);
+			onConfigure(db);
 
-			final int version = H2Helper.getVersion(conn);
+			final int version = db.getVersion();
 			if (version != mNewVersion) {
-				if (H2Helper.isReadOnly(conn)) {
-					throw new IllegalStateException("Can't upgrade read-only database from version " + version + " to "
-							+ mNewVersion + ": " + filePath);
+				if (db.isReadOnly()) {
+					throw new IllegalStateException("Can't upgrade read-only database from version " + db.getVersion()
+							+ " to " + mNewVersion + ": " + filePath);
 				}
 
 				if (version > 0 && version < mMinimumSupportedVersion) {
-					File databaseFile = new File(filePath);
-					onBeforeDelete(conn);
-					H2Helper.releaseConnection(conn);
-
-					if (databaseFile.delete()) {
+					File databaseFile = new File(db.getFilePath());
+					onBeforeDelete(db);
+					db.close();
+					if (H2Database.deleteDatabase(databaseFile)) {
 						mIsInitializing = false;
 						return getDatabaseLocked(writable);
 					} else {
@@ -110,31 +111,37 @@ public abstract class H2OpenHelper {
 								"Unable to delete obsolete database " + filePath + " with version " + version);
 					}
 				} else {
-					if (version == 0) {
-						onCreate(conn);
-					} else {
-						if (version > mNewVersion) {
-							onDowngrade(conn, version, mNewVersion);
+					db.beginTransaction();
+					try {
+						if (version == 0) {
+							onCreate(db);
 						} else {
-							onUpgrade(conn, version, mNewVersion);
+							if (version > mNewVersion) {
+								onDowngrade(db, version, mNewVersion);
+							} else {
+								onUpgrade(db, version, mNewVersion);
+							}
 						}
+						db.setVersion(mNewVersion);
+						db.setTransactionSuccessful();
+					} finally {
+						db.endTransaction();
 					}
-					H2Helper.dbUpdateDone(conn, mNewVersion);
 				}
 			}
 
-			onOpen(conn);
+			onOpen(db);
 
-			if (H2Helper.isReadOnly(conn)) {
+			if (db.isReadOnly()) {
 				Log.w(TAG, "Opened " + filePath + " in read-only mode");
 			}
 
-			return conn;
+			mDatabase = db;
+			return db;
 		} finally {
 			mIsInitializing = false;
-			if (conn != null && conn != mConn) {
-				H2Helper.releaseConnection(conn);
-				conn = null;
+			if (db != null && db != mDatabase) {
+				db.close();
 			}
 		}
 	}
@@ -143,27 +150,27 @@ public abstract class H2OpenHelper {
 		if (mIsInitializing)
 			throw new IllegalStateException("Closed during initialization");
 
-		if (mConn != null && H2Helper.isValid(mConn)) {
-			H2Helper.releaseConnection(mConn);
-			mConn = null;
+		if (mDatabase != null && mDatabase.isOpen()) {
+			mDatabase.close();
+			mDatabase = null;
 		}
 	}
 
-	public void onConfigure(Connection conn) {
+	public void onConfigure(H2Database db) {
 	}
 
-	public void onBeforeDelete(Connection conn) {
+	public void onBeforeDelete(H2Database db) {
 	}
 
-	public abstract void onCreate(Connection conn);
+	public abstract void onCreate(H2Database db);
 
-	public abstract void onUpgrade(Connection conn, int oldVersion, int newVersion);
+	public abstract void onUpgrade(H2Database db, int oldVersion, int newVersion);
 
-	public void onDowngrade(Connection conn, int oldVersion, int newVersion) {
+	public void onDowngrade(H2Database db, int oldVersion, int newVersion) {
 		throw new IllegalStateException("Can't downgrade database from version " + oldVersion + " to " + newVersion);
 	}
 
-	public void onOpen(Connection conn) {
+	public void onOpen(H2Database db) {
 	}
 
 }

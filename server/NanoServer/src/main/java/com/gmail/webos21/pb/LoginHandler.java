@@ -101,6 +101,7 @@ public class LoginHandler implements UriHandler {
 
 		rr.addHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 		rr.addHeader("Access-Control-Allow-Credentials", "true");
+		rr.addHeader("Access-Control-Allow-Headers", "true");
 		rr.addHeader("Access-Control-Allow-Methods", "GET,DELETE,POST,PUT,HEAD,OPTIONS");
 		rr.addHeader("Access-Control-Max-Age", "86400");
 
