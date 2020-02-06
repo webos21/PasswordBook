@@ -271,14 +271,16 @@ public final class H2Database {
 			}
 
 			mStmt = H2Helper.preparedStatement(mConn, sql);
-			for (int i = 0; i < whereArgs.length; i++) {
-				try {
-					mStmt.setString(i + 1, whereArgs[i]);
-				} catch (SQLException e) {
-					e.printStackTrace();
-					H2Helper.closeStatement(mStmt);
-					mStmt = null;
-					return rows;
+			if (whereArgs != null) {
+				for (int i = 0; i < whereArgs.length; i++) {
+					try {
+						mStmt.setString(i + 1, whereArgs[i]);
+					} catch (SQLException e) {
+						e.printStackTrace();
+						H2Helper.closeStatement(mStmt);
+						mStmt = null;
+						return rows;
+					}
 				}
 			}
 

@@ -239,7 +239,7 @@ public class PbDbHelper extends H2OpenHelper implements PbDbInterface {
 
 			int nCol = rmd.getColumnCount();
 			StringBuilder sb = new StringBuilder();
-			for (int i = 1; i < nCol; i++) {
+			for (int i = 1; i <= nCol; i++) {
 				sb.append(rmd.getColumnName(i)).append('(').append(i).append(')').append('\t').append('|');
 			}
 			if (Consts.DB_DEBUG) {
@@ -250,7 +250,7 @@ public class PbDbHelper extends H2OpenHelper implements PbDbInterface {
 
 			rset.first();
 			do {
-				for (int c = 1; c < nCol; c++) {
+				for (int c = 1; c <= nCol; c++) {
 					sb.append(rset.getString(c)).append('\t').append('|');
 				}
 				sb.append('\n');

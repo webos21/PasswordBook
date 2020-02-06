@@ -588,7 +588,9 @@ public abstract class NanoHTTPD {
 		}
 
 		public String getEncoding() {
-			return encoding == null ? ASCII_ENCODING : encoding;
+			/* by cmjo : changed */
+			// return encoding == null ? ASCII_ENCODING : encoding;
+			return encoding == null ? "UTF-8" : encoding;
 		}
 
 		public String getBoundary() {
@@ -1190,7 +1192,7 @@ public abstract class NanoHTTPD {
 
 				// If the method is POST, there may be parameters
 				// in data section, too, read it:
-				if (Method.POST.equals(this.method)) {
+				if (Method.POST.equals(this.method) || Method.PUT.equals(this.method)) {
 					ContentType contentType = new ContentType(this.headers.get("content-type"));
 					if (contentType.isMultipart()) {
 						String boundary = contentType.getBoundary();
@@ -1213,30 +1215,10 @@ public abstract class NanoHTTPD {
 							files.put("postData", postLine);
 						}
 					}
-				} else if (Method.PUT.equals(this.method)) {
-					ContentType contentType = new ContentType(this.headers.get("content-type"));
-					if (contentType.isMultipart()) {
-						String boundary = contentType.getBoundary();
-						if (boundary == null) {
-							throw new ResponseException(Response.Status.BAD_REQUEST,
-									"BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html");
-						}
-						decodeMultipartFormData(contentType, fbuf, this.parms, files);
-					} else {
-						byte[] postBytes = new byte[fbuf.remaining()];
-						fbuf.get(postBytes);
-						String postLine = new String(postBytes, contentType.getEncoding()).trim();
-						// Handle application/x-www-form-urlencoded
-						if ("application/x-www-form-urlencoded".equalsIgnoreCase(contentType.getContentType())) {
-							decodeParms(postLine, this.parms);
-						} else if (postLine.length() != 0) {
-							// Special case for raw POST data => create a
-							// special files entry "postData" with raw content
-							// data
-							files.put("postData", postLine);
-						}
-					}
-				}
+				} 
+//				else if (Method.PUT.equals(this.method)) {
+//					files.put("content", saveTmpFile(fbuf, 0, fbuf.limit(), null));
+//				}
 			} finally {
 				safeClose(randomAccessFile);
 			}

@@ -40,6 +40,8 @@ public class PbDataHandler implements UriHandler {
 			return processGet(headers, session, uri, files);
 		case PUT:
 			return processPut(headers, session, uri, files);
+		case DELETE:
+			return processDelete(headers, session, uri);
 		default:
 			return processSimple(Status.METHOD_NOT_ALLOWED);
 		}
@@ -62,6 +64,50 @@ public class PbDataHandler implements UriHandler {
 		sb.append("}\n");
 
 		RouteResult rr = RouteResult.newRouteResult(status, "application/json", sb.toString());
+		addCorsHeader(rr);
+
+		RouteResult.print(rr);
+		System.out.println(sb.toString());
+
+		return rr;
+	}
+
+	private RouteResult processDelete(Map<String, String> headers, IHTTPSession session, String uri) {
+		Map<String, String> reqHeaders = session.getHeaders();
+		String authVal = reqHeaders.get("authorization");
+		if (authVal == null) {
+			return processSimple(Status.UNAUTHORIZED);
+		}
+		String[] authArr = authVal.split(" ");
+		if (authArr == null || authArr.length != 2) {
+			return processSimple(Status.UNAUTHORIZED);
+		}
+
+		Decoder b64dec = Base64.getDecoder();
+		String auth = new String(b64dec.decode(authArr[1]));
+		System.out.println("auth = " + auth);
+		if (!"username:password".equals(auth)) {
+			return processSimple(Status.UNAUTHORIZED);
+		}
+
+		@SuppressWarnings("deprecation")
+		Map<String, String> params = session.getParms();
+
+		for (String key : params.keySet()) {
+			System.out.println(key + " = " + params.get(key));
+		}
+
+		String siteId = params.get("siteId");
+		int deletedRows = pdbi.deleteRow(Long.parseLong(siteId));
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("{\n");
+		sb.append("  \"result\": \"OK\",\n");
+		sb.append("  \"deletedRows\": ").append(deletedRows);
+		sb.append("}\n");
+
+		RouteResult rr = RouteResult.newRouteResult(Status.OK, "application/json", sb.toString());
 		addCorsHeader(rr);
 
 		RouteResult.print(rr);
