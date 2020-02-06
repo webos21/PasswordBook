@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { withRouter } from "react-router-dom";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Col, Form, FormGroup, FormFeedback, Label } from 'reactstrap';
 import { useForm } from "react-hook-form";
 
@@ -35,13 +34,13 @@ const PbFormEdit = props => {
         }
     });
 
-    const [modalShowEdit, setModalShowEdit] = useState(false);
+    const [modalShowEdit, setModalShow] = useState(false);
 
-    const toggleOpenEdit = () => {
-        setModalShowEdit(!modalShowEdit);
+    const toggleOpen = () => {
+        setModalShow(!modalShowEdit);
     }
 
-    const onSubmitEdit = (data, e) => {
+    const onSubmit = (data, e) => {
         const formData = new FormData(e.target);
 
         fetch('http://localhost:28080/pwdata.do', {
@@ -57,25 +56,26 @@ const PbFormEdit = props => {
             }
             return res.json();
         }).then(function (resJson) {
-            console.log(resJson.result);
+            console.log("PbFormEdit::fetch => " + resJson.result);
             if (resJson.result === "OK") {
-                toggleOpenEdit();
+                toggleOpen();
+                props.callbackFromParent(resJson.data[0]);
             }
         }).catch(function (error) {
+            console.log("PbFormEdit::fetch => " + error);
             setError("siteUrl", "serverResponse", error.message);
-            console.log(error);
             //e.target.reset();
         });
     };
 
     return (
         <span>
-            <Button color="warning" className="btn-sm" onClick={toggleOpenEdit}>
-                <i className="fa fa-lightbulb-o"></i>&nbsp;수정</Button>
-            <Modal isOpen={modalShowEdit} toggle={toggleOpenEdit}
+            <Button color="warning" className="btn-sm" onClick={toggleOpen}>
+                <i className="fa fa-edit"></i>&nbsp;수정</Button>
+            <Modal isOpen={modalShowEdit} toggle={toggleOpen}
                 className={'modal-warning ' + props.className}>
-                <Form onSubmit={handleSubmit(onSubmitEdit)}>
-                    <ModalHeader toggle={toggleOpenEdit}>비밀번호 수정</ModalHeader>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <ModalHeader toggle={toggleOpen}>비밀번호 수정</ModalHeader>
                     <ModalBody>
                         <FormGroup row>
                             <Col md="3">
@@ -243,7 +243,7 @@ const PbFormEdit = props => {
                     </ModalBody>
                     <ModalFooter>
                         <Button type="submit" color="warning">수정</Button>{' '}
-                        <Button color="secondary" onClick={toggleOpenEdit}>취소</Button>
+                        <Button color="secondary" onClick={toggleOpen}>취소</Button>
                     </ModalFooter>
                 </Form>
             </Modal>
@@ -251,4 +251,4 @@ const PbFormEdit = props => {
     );
 };
 
-export default withRouter(PbFormEdit);
+export default PbFormEdit;

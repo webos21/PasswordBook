@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { withRouter } from "react-router-dom";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Col, Form, FormGroup, FormFeedback, Label } from 'reactstrap';
 import { useForm } from "react-hook-form";
 
@@ -17,7 +16,6 @@ const PbFormAdd = props => {
 
     const onSubmit = (data, e) => {
         const formData = new FormData(e.target);
-        const callbackFromParent = props.callbackFromParent.bind(props);
 
         fetch('http://localhost:28080/pwdata.do', {
             method: 'POST',
@@ -32,14 +30,14 @@ const PbFormAdd = props => {
             }
             return res.json();
         }).then(function (resJson) {
-            console.log(resJson.result);
+            console.log("PbFormAdd::fetch => " + resJson.result);
             if (resJson.result === "OK") {
                 toggleOpen();
-                callbackFromParent();
+                props.callbackFromParent();
             }
         }).catch(function (error) {
+            console.log("PbFormAdd::fetch => " + error);
             setError("siteUrl", "serverResponse", error.message);
-            console.log(error);
             //e.target.reset();
         });
     };
@@ -226,4 +224,4 @@ const PbFormAdd = props => {
     );
 };
 
-export default withRouter(PbFormAdd);
+export default PbFormAdd;
