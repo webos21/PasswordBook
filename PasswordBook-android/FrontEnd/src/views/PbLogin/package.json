@@ -1,0 +1,6 @@
+{
+  "name": "PbLogin",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./PbLogin.js"
+}

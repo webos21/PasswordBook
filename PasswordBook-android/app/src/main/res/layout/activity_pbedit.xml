@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PbAddActivity">
+
+    <TextView
+        android:id="@+id/lbl_title"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:text="@string/auth_title"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dip">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/pb_home_hmargin"
+            android:paddingTop="@dimen/pb_home_vmargin"
+            android:paddingRight="@dimen/pb_home_hmargin"
+            android:paddingBottom="@dimen/pb_home_vmargin">
+
+            <LinearLayout
+                android:id="@+id/panel_id"
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_id" />
+
+                <TextView
+                    android:id="@+id/tv_id"
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_id"
+                    android:text="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_surl" />
+
+                <EditText
+                    android:id="@+id/ed_url"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_surl"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_sname" />
+
+                <EditText
+                    android:id="@+id/ed_name"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_sname"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_stype" />
+
+                <EditText
+                    android:id="@+id/ed_type"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_stype"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_myid" />
+
+                <EditText
+                    android:id="@+id/ed_myid"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_myid"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_mypw" />
+
+                <EditText
+                    android:id="@+id/ed_mypw"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_mypw"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_regday" />
+
+                <TextView
+                    android:id="@+id/tv_regdate"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_regday"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/panel_fixday"
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_fixday" />
+
+                <TextView
+                    android:id="@+id/tv_fixdate"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_regday"
+                    android:maxLines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/PreferenceCategoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    style="@style/PreferenceCategory"
+                    android:layout_width="0dip"
+                    android:layout_weight="2"
+                    android:text="@string/pbe_memo" />
+
+                <EditText
+                    android:id="@+id/ed_memo"
+                    android:layout_width="0dip"
+                    android:layout_height="100dip"
+                    android:layout_weight="4"
+                    android:hint="@string/pbh_memo"
+                    android:inputType="textMultiLine"
+                    android:maxLength="2000"
+                    android:minLines="3"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:layout_marginBottom="20dip"
+                android:text="@string/pbe_add"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

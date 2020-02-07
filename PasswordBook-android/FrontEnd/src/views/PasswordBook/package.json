@@ -1,0 +1,6 @@
+{
+  "name": "PasswordBook",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./PasswordBook.js"
+}

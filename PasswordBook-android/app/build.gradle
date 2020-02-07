@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    runtimeOnly project(":FrontEnd")
     implementation project(':webos21-java')
     implementation project(':webos21-android');
     implementation fileTree(dir: 'libs', include: ['*.jar'])

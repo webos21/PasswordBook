@@ -1,1 +1,6 @@
-include 'webos21-java', 'webos21-android', ':app'
+//rootProject.name = "PasswordBook-android"
+
+include 'webos21-java'
+include 'webos21-android'
+include 'FrontEnd'
+include ':app'

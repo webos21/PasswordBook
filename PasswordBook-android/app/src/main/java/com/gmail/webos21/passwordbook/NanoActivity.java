@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,13 +22,12 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-public class PbEditActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private static final String TAG = "PbEditActivity";
+public class NanoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView lblTitle;
 
     private ViewGroup panelId;
+    private ViewGroup panelFixday;
 
     private TextView tvId;
     private EditText edUrl;
@@ -38,7 +36,6 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
     private EditText edMyId;
     private EditText edMyPw;
     private TextView tvRegDate;
-    private TextView tvFixgDate;
     private EditText edMemo;
 
     private Button btnSave;
@@ -51,10 +48,13 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_pbedit);
 
         lblTitle = (TextView) findViewById(R.id.lbl_title);
-        lblTitle.setText(getResources().getString(R.string.pbe_title_change));
+        lblTitle.setText(getResources().getString(R.string.pbe_title_add));
 
         panelId = (ViewGroup) findViewById(R.id.panel_id);
-        panelId.setVisibility(View.VISIBLE);
+        panelId.setVisibility(View.GONE);
+
+        panelFixday = (ViewGroup) findViewById(R.id.panel_fixday);
+        panelFixday.setVisibility(View.GONE);
 
         tvId = (TextView) findViewById(R.id.tv_id);
         edUrl = (EditText) findViewById(R.id.ed_url);
@@ -64,11 +64,10 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         edMyPw = (EditText) findViewById(R.id.ed_mypw);
         tvRegDate = (TextView) findViewById(R.id.tv_regdate);
         tvRegDate.setOnClickListener(this);
-        tvFixgDate = (TextView) findViewById(R.id.tv_fixdate);
         edMemo = (EditText) findViewById(R.id.ed_memo);
 
         btnSave = (Button) findViewById(R.id.btn_save);
-        btnSave.setText(getResources().getString(R.string.pbe_modify));
+        btnSave.setText(getResources().getString(R.string.pbe_add));
         btnSave.setOnClickListener(this);
 
         dpl = new DatePickerListener();
@@ -77,21 +76,6 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onStart() {
         super.onStart();
-
-        Intent i = getIntent();
-        if (i != null) {
-            Log.i(TAG, "i = " + i);
-            Long pbId = i.getLongExtra(Consts.EXTRA_ARG_ID, -1);
-            Log.i(TAG, "pbId = " + pbId);
-            if (pbId > 0) {
-                PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
-                setValues(pdi.getRow(pbId));
-            } else {
-                finish();
-            }
-        } else {
-            finish();
-        }
     }
 
     @Override
@@ -114,32 +98,8 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void setValues(PbRow pb) {
-        PbApp app = (PbApp) getApplicationContext();
-        byte[] pkBytes = app.getPkBytes();
-
-        tvId.setText(pb.getId().toString());
-        edUrl.setText(pb.getSiteUrl());
-        edName.setText(pb.getSiteName());
-        edType.setText(pb.getSiteType());
-        edMyId.setText(PbCryptHelper.decData(pb.getMyId(), pkBytes));
-        edMyPw.setText(PbCryptHelper.decData(pb.getMyPw(), pkBytes));
-        tvRegDate.setText(Consts.SDF_DATE.format(pb.getRegDate()));
-        tvFixgDate.setText(Consts.SDF_DATETIME.format(pb.getFixDate()));
-        edMemo.setText(pb.getMemo());
-    }
-
     private void showDatePicker() {
-        String strDate = tvRegDate.getText().toString();
-        Date td = null;
-        try {
-            td = Consts.SDF_DATE.parse(strDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         final Calendar c = Calendar.getInstance();
-        c.setTime(td);
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
@@ -153,7 +113,6 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void saveData() {
-        String id = tvId.getText().toString();
         String surl = edUrl.getText().toString();
         String sname = edName.getText().toString();
         String stype = edType.getText().toString();
@@ -200,13 +159,13 @@ public class PbEditActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
 
-        PbApp app = (PbApp) getApplicationContext();
+        PbApp app = (PbApp) edMyPw.getContext().getApplicationContext();
         byte[] pkBytes = app.getPkBytes();
 
         String encId = PbCryptHelper.encData(myid, pkBytes);
         String encPw = PbCryptHelper.encData(mypw, pkBytes);
 
-        PbRow pbr = new PbRow(Long.parseLong(id), surl, sname, stype, encId, encPw, rd.getTime(), System.currentTimeMillis(), memo);
+        PbRow pbr = new PbRow(null, surl, sname, stype, encId, encPw, rd.getTime(), System.currentTimeMillis(), memo);
         PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
         pdi.updateRow(pbr);
 

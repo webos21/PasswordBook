@@ -98,4 +98,21 @@ public class PbRow {
         this.memo = memo;
     }
 
+    public String toJson() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append('{').append('\n');
+        sb.append("  \"id\": ").append(id).append(",\n");
+        sb.append("  \"siteUrl\": \"").append(siteUrl).append("\",\n");
+        sb.append("  \"siteName\": \"").append(siteName).append("\",\n");
+        sb.append("  \"siteType\": \"").append(siteType).append("\",\n");
+        sb.append("  \"myId\": \"").append(myId).append("\",\n");
+        sb.append("  \"myPw\": \"").append(myPw).append("\",\n");
+        sb.append("  \"regDate\": ").append(regDate.getTime()).append(",\n");
+        sb.append("  \"fixDate\": ").append(fixDate.getTime()).append(",\n");
+        sb.append("  \"memo\": \"").append(memo).append("\"\n");
+        sb.append('}').append('\n');
+
+        return sb.toString();
+    }
 }

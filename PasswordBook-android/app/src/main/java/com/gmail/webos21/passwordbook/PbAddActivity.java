@@ -45,7 +45,7 @@ public class PbAddActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pbedit);
+        setContentView(R.layout.activity_pbedit);
 
         lblTitle = (TextView) findViewById(R.id.lbl_title);
         lblTitle.setText(getResources().getString(R.string.pbe_title_add));
