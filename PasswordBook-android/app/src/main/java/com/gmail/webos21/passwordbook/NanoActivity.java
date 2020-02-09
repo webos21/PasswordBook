@@ -45,7 +45,7 @@ public class NanoActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pbedit);
+        setContentView(R.layout.activity_nano);
 
         lblTitle = (TextView) findViewById(R.id.lbl_title);
         lblTitle.setText(getResources().getString(R.string.pbe_title_add));
