@@ -31,7 +31,7 @@ public class PbDataHandler implements UriHandler {
 	@Override
 	public RouteResult process(Map<String, String> headers, IHTTPSession session, String uri,
 			Map<String, String> files) {
-		Log.d(TAG, "\n=========================================\n");
+		Log.d(TAG, "\n\n=========================================\n");
 		Log.d(TAG, "Response) " + session.getMethod() + " " + uri);
 
 		switch (session.getMethod()) {

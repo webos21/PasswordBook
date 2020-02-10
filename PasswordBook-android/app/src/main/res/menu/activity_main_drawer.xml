@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
-    <group android:checkableBehavior="single">
+    <group>
         <item
-            android:id="@+id/nav_cur_pos"
-            android:title="현 위치" />
+            android:id="@+id/nav_password"
+            android:title="암호책 앱" />
         <item
-            android:id="@+id/nav_call"
-            android:title="음성통화" />
-        <item
-            android:id="@+id/nav_sms"
-            android:title="문자전송" />
-        <item
-            android:id="@+id/nav_camera"
-            android:title="사진촬영" />
+            android:id="@+id/nav_web"
+            android:title="웹 서비스" />
     </group>
-    -->
 
     <item android:title="Settings">
         <menu>

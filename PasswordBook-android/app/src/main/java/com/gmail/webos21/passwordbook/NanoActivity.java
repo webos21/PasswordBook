@@ -1,185 +1,198 @@
 package com.gmail.webos21.passwordbook;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
+import android.text.format.Formatter;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
-import com.gmail.webos21.passwordbook.db.PbDbInterface;
-import com.gmail.webos21.passwordbook.db.PbDbManager;
-import com.gmail.webos21.passwordbook.db.PbRow;
+import com.gmail.webos21.nano.NanoHTTPD;
+import com.gmail.webos21.passwordbook.web.DirWebServer;
+import com.gmail.webos21.passwordbook.web.HttpNewClientListener;
+import com.gmail.webos21.passwordbook.web.PbWebServer;
+import com.gmail.webos21.passwordbook.web.StaticResourceExtractor;
+import com.gmail.webos21.passwordbook.web.UiLog;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.File;
+import java.io.IOException;
 
-public class NanoActivity extends AppCompatActivity implements View.OnClickListener {
+public class NanoActivity extends AppCompatActivity {
 
-    private TextView lblTitle;
+    private final static String NO_SERVICE = "NO SERVICE!!";
+    private final static String WEB_ADDR_ANY = "0.0.0.0";
+    private final static int WEB_PORT = 9999;
 
-    private ViewGroup panelId;
-    private ViewGroup panelFixday;
+    private TextView tvIpAddr;
+    private TextView tvLog;
 
-    private TextView tvId;
-    private EditText edUrl;
-    private EditText edName;
-    private EditText edType;
-    private EditText edMyId;
-    private EditText edMyPw;
-    private TextView tvRegDate;
-    private EditText edMemo;
+    private Switch swPbWeb;
+    private Switch swDirWeb;
 
-    private Button btnSave;
+    private HttpNewClientListener nhcl;
 
-    private DatePickerListener dpl;
+    private DirWebServer dws;
+    private PbWebServer pws;
+
+    private DirWebSwitchListener dwsl;
+    private PbWebSwitchListener pwsl;
+
+    private UiLog logger;
+
+    private File pwdir;
+    private File exdir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nano);
 
-        lblTitle = (TextView) findViewById(R.id.lbl_title);
-        lblTitle.setText(getResources().getString(R.string.pbe_title_add));
+        tvIpAddr = (TextView) findViewById(R.id.tv_ip_addr);
+        tvLog = (TextView) findViewById(R.id.tv_log);
 
-        panelId = (ViewGroup) findViewById(R.id.panel_id);
-        panelId.setVisibility(View.GONE);
+        dwsl = new DirWebSwitchListener();
+        pwsl = new PbWebSwitchListener();
 
-        panelFixday = (ViewGroup) findViewById(R.id.panel_fixday);
-        panelFixday.setVisibility(View.GONE);
+        swPbWeb = (Switch) findViewById(R.id.sw_pb_web);
+        swDirWeb = (Switch) findViewById(R.id.sw_dir_web);
 
-        tvId = (TextView) findViewById(R.id.tv_id);
-        edUrl = (EditText) findViewById(R.id.ed_url);
-        edName = (EditText) findViewById(R.id.ed_name);
-        edType = (EditText) findViewById(R.id.ed_type);
-        edMyId = (EditText) findViewById(R.id.ed_myid);
-        edMyPw = (EditText) findViewById(R.id.ed_mypw);
-        tvRegDate = (TextView) findViewById(R.id.tv_regdate);
-        tvRegDate.setOnClickListener(this);
-        edMemo = (EditText) findViewById(R.id.ed_memo);
+        swPbWeb.setOnCheckedChangeListener(pwsl);
+        swDirWeb.setOnCheckedChangeListener(dwsl);
 
-        btnSave = (Button) findViewById(R.id.btn_save);
-        btnSave.setText(getResources().getString(R.string.pbe_add));
-        btnSave.setOnClickListener(this);
+        tvLog.setText("");
+        tvLog.setMovementMethod(new ScrollingMovementMethod());
 
-        dpl = new DatePickerListener();
+        logger = new UiLog(tvLog);
+        nhcl = new NewHttpClientListener();
+
+        try {
+            exdir = Environment.getExternalStorageDirectory();
+            pwdir = getFilesDir();
+
+            dws = new DirWebServer(WEB_ADDR_ANY, WEB_PORT, exdir);
+            dws.setUiLog(logger);
+            dws.setClientListener(nhcl);
+
+            pws = new PbWebServer(WEB_ADDR_ANY, WEB_PORT, pwdir);
+            pws.setUiLog(logger);
+            pws.setClientListener(nhcl);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        tvIpAddr.setText(NanoActivity.NO_SERVICE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        File indexHtml = new File(pwdir, "index.html");
+        if (!indexHtml.exists()) {
+            new StaticResourceExtractor(this, "static", pwdir.getPath()).execute();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-    }
-
-    @Override
-    public void onClick(View v) {
-        int vId = v.getId();
-        switch (vId) {
-            case R.id.tv_regdate:
-                showDatePicker();
-                break;
-            case R.id.btn_save:
-                saveData();
-                break;
-            default:
-                break;
+        if (swPbWeb.isChecked()) {
+            swPbWeb.setChecked(false);
+        }
+        if (swDirWeb.isChecked()) {
+            swDirWeb.setChecked(false);
         }
     }
 
-    private void showDatePicker() {
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dpd = new DatePickerDialog(this, dpl, year, month, day);
-        dpd.show();
+    private String getIpAddress() {
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        return ip;
     }
 
-    private void errorToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    private void showDialogGrant(final String ip) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder adBuilder = new AlertDialog.Builder(NanoActivity.this);
+                adBuilder.setTitle("웹 접속 허용");
+                adBuilder.setMessage("[" + ip + "]로부터 신규 웹 접속이 요청되었습니다.\n허용할까요?");
+                adBuilder.setPositiveButton("허용",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                NanoActivity.this.dws.addWhiteList(ip);
+                                NanoActivity.this.pws.addWhiteList(ip);
+                            }
+                        });
+                adBuilder.setNegativeButton("거부",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // Nothing to do
+                            }
+                        });
+                adBuilder.create().show();
+            }
+        });
     }
 
-    private void saveData() {
-        String surl = edUrl.getText().toString();
-        String sname = edName.getText().toString();
-        String stype = edType.getText().toString();
-        String myid = edMyId.getText().toString();
-        String mypw = edMyPw.getText().toString();
-        String regDate = tvRegDate.getText().toString();
-        String memo = edMemo.getText().toString();
-
-        if (surl == null || surl.length() < 5) {
-            edUrl.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_url));
-            return;
-        }
-        if (sname == null || sname.length() < 2) {
-            edName.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_name));
-            return;
-        }
-        if (stype == null || stype.length() < 2) {
-            edType.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_type));
-            return;
-        }
-        if (myid == null || myid.length() < 2) {
-            edMyId.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_myid));
-            return;
-        }
-        if (mypw == null || mypw.length() < 2) {
-            edMyPw.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_mypw));
-            return;
-        }
-        if (regDate == null || regDate.length() < 2) {
-            tvRegDate.requestFocus();
-            errorToast(getResources().getString(R.string.err_pb_regdate));
-            return;
-        }
-
-        Date rd = null;
-        try {
-            rd = Consts.SDF_DATE.parse(regDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        PbApp app = (PbApp) edMyPw.getContext().getApplicationContext();
-        byte[] pkBytes = app.getPkBytes();
-
-        String encId = PbCryptHelper.encData(myid, pkBytes);
-        String encPw = PbCryptHelper.encData(mypw, pkBytes);
-
-        PbRow pbr = new PbRow(null, surl, sname, stype, encId, encPw, rd.getTime(), System.currentTimeMillis(), memo);
-        PbDbInterface pdi = PbDbManager.getInstance().getPbDbInterface();
-        pdi.updateRow(pbr);
-
-        Intent i = new Intent();
-        setResult(Activity.RESULT_OK, i);
-
-        finish();
-    }
-
-    private class DatePickerListener implements DatePickerDialog.OnDateSetListener {
+    private class NewHttpClientListener implements HttpNewClientListener {
         @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            String strDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
-            tvRegDate.setText(strDate);
+        public void onNewClientRequest(final String ip) {
+            NanoActivity.this.showDialogGrant(ip);
+        }
+    }
+
+    private class DirWebSwitchListener implements Switch.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (NanoActivity.this.dws != null) {
+                if (isChecked) {
+                    if (NanoActivity.this.swPbWeb.isChecked()) {
+                        NanoActivity.this.swPbWeb.setChecked(false);
+                    }
+                    try {
+                        String addr = "http://" + getIpAddress() + ":" + NanoActivity.WEB_PORT + "/";
+                        NanoActivity.this.tvIpAddr.setText(addr);
+                        NanoActivity.this.dws.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    NanoActivity.this.tvIpAddr.setText(NanoActivity.NO_SERVICE);
+                    NanoActivity.this.dws.stop();
+                }
+            }
+        }
+    }
+
+    private class PbWebSwitchListener implements Switch.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (NanoActivity.this.pws != null) {
+                if (isChecked) {
+                    if (NanoActivity.this.swDirWeb.isChecked()) {
+                        NanoActivity.this.swDirWeb.setChecked(false);
+                    }
+                    try {
+                        String addr = "http://" + getIpAddress() + ":" + NanoActivity.WEB_PORT + "/";
+                        NanoActivity.this.tvIpAddr.setText(addr);
+                        NanoActivity.this.pws.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    NanoActivity.this.tvIpAddr.setText(NanoActivity.NO_SERVICE);
+                    NanoActivity.this.pws.stop();
+                }
+            }
         }
     }
 

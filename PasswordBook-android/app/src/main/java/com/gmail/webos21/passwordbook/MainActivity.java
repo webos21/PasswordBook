@@ -333,6 +333,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public boolean onNavigationItemSelected(MenuItem item) {
             int id = item.getItemId();
             switch (id) {
+                case R.id.nav_password: {
+                    break;
+                }
+                case R.id.nav_web: {
+                    Intent i = new Intent(MainActivity.this, NanoActivity.class);
+                    MainActivity.this.startActivity(i);
+                    break;
+                }
                 case R.id.nav_settings: {
                     Intent i = new Intent(MainActivity.this, AuthConfigActivity.class);
                     MainActivity.this.startActivityForResult(i, Consts.ACTION_PASS_CFG);
