@@ -9,6 +9,7 @@ import com.gmail.webos21.nano.NanoHTTPD.Response.Status;
 import com.gmail.webos21.nano.RouteResult;
 import com.gmail.webos21.nano.UriHandler;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -50,6 +51,7 @@ public class LoginHandler implements UriHandler {
             byte[] encryptBytes = cipher.doFinal();
 
             validPassword = Base64.encodeToString(encryptBytes, Base64.DEFAULT);
+            validPassword = validPassword.trim();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -129,7 +131,7 @@ public class LoginHandler implements UriHandler {
             sb.append("}\n");
 
             rr = RouteResult.newRouteResult(Status.OK, "application/json", sb.toString());
-            rr.addHeader("Set-Cookies", "X-PB-AUTH=test; Domain=localhost:3000");
+            rr.addHeader("Set-Cookies", "X-PB-AUTH=test;");
         } else {
             sb.append("{\n");
             sb.append("  \"result\": \"FAIL\"\n");
@@ -137,7 +139,6 @@ public class LoginHandler implements UriHandler {
             rr = RouteResult.newRouteResult(Status.UNAUTHORIZED, "application/json", sb.toString());
             rr.addHeader("Set-Cookies", "X-PB-AUTH=;");
         }
-        addCorsHeader(rr);
 
         RouteResult.print(rr);
         Log.d(TAG, sb.toString());

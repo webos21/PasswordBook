@@ -3,7 +3,7 @@
   "version": "2.6.0",
   "description": "PasswordBook Web",
   "author": "Cheolmin Jo",
-  "homepage": "https://webos21.github.io/PasswordBook",
+  "homepage": "https://webos21.github.io/PasswordBook/",
   "copyright": "Copyright 2020 NeoFoundtion Cheolmin Jo",
   "license": "MIT",
   "private": true,

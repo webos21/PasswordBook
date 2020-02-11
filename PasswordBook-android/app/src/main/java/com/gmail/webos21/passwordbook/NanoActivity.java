@@ -94,7 +94,7 @@ public class NanoActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         File indexHtml = new File(pwdir, "index.html");
-        if (!indexHtml.exists()) {
+        if (true || !indexHtml.exists()) {
             new StaticResourceExtractor(this, "static", pwdir.getPath()).execute();
         }
     }

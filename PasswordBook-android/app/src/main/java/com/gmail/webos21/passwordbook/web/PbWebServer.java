@@ -115,7 +115,10 @@ public class PbWebServer extends NanoHTTPD {
 
         res = dynamicRouter.route(header, session, uri, files);
         if (res == null) {
+            StringBuilder sb = new StringBuilder();
             res = staticRouter.route(header, session, uri);
+            RouteResult.print(res, sb);
+            log(sb.toString());
         }
 
         return routeToResponse(res);

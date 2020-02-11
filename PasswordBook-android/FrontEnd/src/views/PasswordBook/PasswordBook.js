@@ -25,7 +25,7 @@ class PasswordBook extends Component {
 
     this.state = {
       dataSet: [],
-      itemsPerPage: 4,
+      itemsPerPage: 15,
       totalPage: 0,
       currentPage: 0,
       visiblePages: 10,
@@ -64,7 +64,7 @@ class PasswordBook extends Component {
 
   requestFetch(query) {
     const parentState = this;
-    const reqUri = 'http://localhost:28080/pwdata.do?q=' +
+    const reqUri = '/pwdata.do?q=' +
       (query === null || query === undefined ? '' : query);
 
     fetch(reqUri, {
@@ -119,7 +119,7 @@ class PasswordBook extends Component {
     if (dataArray.length === 0) {
       return (
         <tr key="row-nodata">
-          <td colSpan="4" className="text-center align-middle" height="200">No Data</td>
+          <td colSpan="5" className="text-center align-middle" height="200">No Data</td>
         </tr>
       )
     } else {

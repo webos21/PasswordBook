@@ -1,7 +1,6 @@
 package com.gmail.webos21.nano;
 
 import com.gmail.webos21.nano.NanoHTTPD.IHTTPSession;
-import com.gmail.webos21.nano.NanoHTTPD.Method;
 import com.gmail.webos21.nano.NanoHTTPD.Response;
 
 import java.io.File;
@@ -19,16 +18,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class StaticRouter {
-
-    public static final boolean DEBUG = true;
-
-    public static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS, HEAD";
-    public static final String DEFAULT_ALLOWED_HEADERS = "origin,accept,content-type";
-    public final static String ACCESS_CONTROL_ALLOW_HEADER_PROPERTY_NAME = "AccessControlAllowHeader";
-
-    public static final String CROSS_ORIGIN = "*";
-
-    public static final int MAX_AGE = 42 * 60 * 60;
 
     /**
      * Default Index file names.
@@ -55,18 +44,7 @@ public class StaticRouter {
             }
         }
 
-        // First let's handle CORS OPTION query
-        RouteResult r;
-        if (CROSS_ORIGIN != null && Method.OPTIONS.equals(session.getMethod())) {
-            r = RouteResult.newRouteResult(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, null, 0);
-        } else {
-            r = defaultRespond(headers, session, uri);
-        }
-
-        if (CROSS_ORIGIN != null) {
-            r = addCORSHeaders(headers, r, CROSS_ORIGIN);
-        }
-        return r;
+        return defaultRespond(headers, session, uri);
     }
 
     /**
@@ -236,16 +214,6 @@ public class StaticRouter {
                 "Error 404, file not found.");
     }
 
-    protected RouteResult addCORSHeaders(Map<String, String> queryHeaders, RouteResult resp, String cors) {
-        resp.addHeader("Access-Control-Allow-Origin", cors);
-        resp.addHeader("Access-Control-Allow-Headers", calculateAllowHeaders(queryHeaders));
-        resp.addHeader("Access-Control-Allow-Credentials", "true");
-        resp.addHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
-        resp.addHeader("Access-Control-Max-Age", "" + MAX_AGE);
-
-        return resp;
-    }
-
     protected String listDirectory(String uri, File f) {
         String heading = "Directory " + uri;
         /* cmjo : revise */
@@ -253,7 +221,8 @@ public class StaticRouter {
 //				+ "span.dirname { font-weight: bold; }\n" + "span.filesize { font-size: 75%; }\n" + "// -->\n"
 //				+ "</style>" + "</head><body><h1>" + heading + "</h1>");
         StringBuilder msg = new StringBuilder();
-        msg.append("<html>\n");
+        msg.append("<!doctype html>\n");
+        msg.append("<html lang=\"ko\">\n");
         msg.append("<head>\n");
         msg.append("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n");
         msg.append("<title>").append(heading).append("</title>\n");
@@ -333,14 +302,6 @@ public class StaticRouter {
         msg.append("</html>");
 
         return msg.toString();
-    }
-
-    private String calculateAllowHeaders(Map<String, String> queryHeaders) {
-        // here we should use the given asked headers
-        // but NanoHttpd uses a Map whereas it is possible for requester to send
-        // several time the same header
-        // let's just use default values for this version
-        return System.getProperty(ACCESS_CONTROL_ALLOW_HEADER_PROPERTY_NAME, DEFAULT_ALLOWED_HEADERS);
     }
 
     private RouteResult defaultRespond(Map<String, String> headers, IHTTPSession session, String uri) {
