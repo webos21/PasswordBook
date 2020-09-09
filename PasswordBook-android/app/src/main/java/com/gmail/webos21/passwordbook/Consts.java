@@ -22,6 +22,7 @@ public class Consts {
     public static final String PREF_FILE = "pb_pref";
     public static final String PREF_PASSKEY = "pref_passkey";
     public static final String PREF_SHOW_ICON = "pref_show_icon";
+    public static final String PREF_FINGER = "pref_finger";
 
     public static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat SDF_TIME = new SimpleDateFormat("HH:mm:ss");

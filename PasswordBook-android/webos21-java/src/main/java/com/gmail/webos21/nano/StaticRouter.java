@@ -228,6 +228,8 @@ public class StaticRouter {
         msg.append("<title>").append(heading).append("</title>\n");
         msg.append("<style>\n");
         msg.append("<!--\n");
+        msg.append("  form[name=frmUpload] { display: block; padding: 10px; border: 1px solid #c0c0c0; }\n");
+        msg.append("  ul section { list-style-type: none; }\n");
         msg.append("  span.dirname { font-weight: bold; }\n");
         msg.append("  span.filesize { font-size: 75%; }\n");
         msg.append("// -->\n");
@@ -235,6 +237,12 @@ public class StaticRouter {
         msg.append("</head>\n\n");
         msg.append("<body>\n");
         msg.append("<h1>").append(heading).append("</h1>\n");
+        msg.append("<form name=\"frmUpload\" action=\"").append("").append("\" method=\"post\"");
+        msg.append(" enctype=\"multipart/form-data\">\n");
+        msg.append("  <input type=\"file\" name=\"ufile\" />\n");
+        msg.append("  <input type=\"hidden\" name=\"upath\" value=\"").append(uri).append("\" />\n");
+        msg.append("  <input type=\"submit\" value=\"Upload\"/>\n");
+        msg.append("</form>\n");
 
         String up = null;
         if (uri.length() > 1) {

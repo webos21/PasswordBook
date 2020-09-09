@@ -55,12 +55,11 @@
                 android:id="@+id/tvPass1"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -69,12 +68,11 @@
                 android:id="@+id/tvPass2"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -83,12 +81,11 @@
                 android:id="@+id/tvPass3"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -97,12 +94,11 @@
                 android:id="@+id/tvPass4"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -111,12 +107,11 @@
                 android:id="@+id/tvPass5"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -125,11 +120,11 @@
                 android:id="@+id/tvPass6"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dip"
                 android:layout_weight="15"
                 android:background="@android:drawable/edit_text"
                 android:focusable="true"
                 android:gravity="center"
-                android:inputType="numberPassword"
                 android:maxLength="1"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -151,6 +146,15 @@
             android:gravity="center"
             android:text="@null"
             android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/swFinger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lblInfo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dip"
+            android:text="@string/auth_finger" />
 
     </RelativeLayout>
 

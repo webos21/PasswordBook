@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 
-import com.gmail.webos21.passwordbook.R;
-
 public class KeypadAdapter extends BaseAdapter {
     private Context mContext;
 

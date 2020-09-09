@@ -11,6 +11,7 @@
 
     <string name="auth_title">User Auth</string>
     <string name="auth_message">Enter your passcode.</string>
+    <string name="auth_finger">Use Finger-Print</string>
 
     <string name="auth_cfg_title">Auth Config</string>
     <string name="auth_cfg_message">Enter your passcode.</string>

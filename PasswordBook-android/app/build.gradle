@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.gmail.webos21.passwordbook"
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -23,11 +23,12 @@ dependencies {
     implementation project(':webos21-java')
     implementation project(':webos21-android');
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:preference-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation "androidx.appcompat:appcompat:1.2.0"                        // from com.android.support:appcompat-v7
+    implementation "androidx.preference:preference:1.1.1"                      // from com.android.support:preference-v7
+    implementation 'com.google.android.material:material:1.3.0-alpha02'        // from com.android.support:design
+    implementation 'androidx.biometric:biometric:1.0.1'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.3.0', {  // from com.android.support.test.espresso
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 }

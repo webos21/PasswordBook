@@ -11,6 +11,7 @@
 
     <string name="auth_title">사용자 인증</string>
     <string name="auth_message">비밀번호를 입력해 주세요.</string>
+    <string name="auth_finger">지문 사용</string>
 
     <string name="auth_cfg_title">비밀번호 설정</string>
     <string name="auth_cfg_message">사용할 비밀번호를 입력해 주세요.</string>

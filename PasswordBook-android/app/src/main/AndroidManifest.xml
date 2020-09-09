@@ -10,6 +10,9 @@
     <!-- For Accessing to External Storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- For Accessing to Finger-Print -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
     <application
         android:name=".PbApp"
         android:allowBackup="true"

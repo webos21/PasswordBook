@@ -9,7 +9,6 @@ import com.gmail.webos21.nano.NanoHTTPD.Response.Status;
 import com.gmail.webos21.nano.RouteResult;
 import com.gmail.webos21.nano.UriHandler;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;

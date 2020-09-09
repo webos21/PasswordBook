@@ -6,21 +6,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.GridView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.gmail.webos21.passwordbook.crypt.PbCryptHelper;
 import com.gmail.webos21.passwordbook.keypad.KeypadAdapter;
 import com.gmail.webos21.passwordbook.keypad.KeypadButton;
+
+import java.util.concurrent.Executor;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -34,6 +42,8 @@ public class AuthActivity extends AppCompatActivity {
     private TextView tvPass4;
     private TextView tvPass5;
     private TextView tvPass6;
+
+    private Switch swFinger;
 
     private GridView gvInputPad;
 
@@ -56,6 +66,8 @@ public class AuthActivity extends AppCompatActivity {
         tvPass5 = (TextView) findViewById(R.id.tvPass5);
         tvPass6 = (TextView) findViewById(R.id.tvPass6);
 
+        swFinger = (Switch) findViewById(R.id.swFinger);
+
         gvInputPad = (GridView) findViewById(R.id.inputPad);
 
         mKeypadAdapter = new KeypadAdapter(this);
@@ -68,7 +80,7 @@ public class AuthActivity extends AppCompatActivity {
                 KeypadButton keypadButton = (KeypadButton) btn.getTag();
 
                 // Process keypad button
-                ProcessKeypadInput(keypadButton);
+                processKeypadInput(keypadButton);
             }
         });
 
@@ -77,6 +89,14 @@ public class AuthActivity extends AppCompatActivity {
         SharedPreferences shpref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
         String passkey = shpref.getString(Consts.PREF_PASSKEY, "000000");
         pkBytes = PbCryptHelper.restorePkBytes(passkey);
+
+        BiometricManager biometricManager = BiometricManager.from(this);
+        if (biometricManager != null && biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+            swFinger.setVisibility(View.VISIBLE);
+        } else {
+            swFinger.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -92,12 +112,20 @@ public class AuthActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     Consts.PERM_REQ_EXTERNAL_STORAGE);
         }
+
+        SharedPreferences shpref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
+        boolean useFinger = shpref.getBoolean(Consts.PREF_FINGER, false);
+        if (useFinger) {
+            swFinger.setChecked(true);
+            showFingerDialog();
+        }
+        swFinger.setOnCheckedChangeListener(new FingerPreferenceChanged());
     }
 
     @Override
     protected void onStop() {
         inputPass = "";
-        ShowInputView();
+        showInputView();
 
         super.onStop();
     }
@@ -115,7 +143,48 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
-    private void ShowInputView() {
+    private void showFingerDialog() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+
+        BiometricPrompt biometricPrompt = new BiometricPrompt(AuthActivity.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode,
+                                              @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                        "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(
+                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                Intent i = new Intent();
+                setResult(Activity.RESULT_OK, i);
+                finish();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometric login for my app")
+                .setSubtitle("Log in using your biometric credential")
+                .setNegativeButtonText("Use account password")
+                .build();
+
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void showInputView() {
         Log.d("PASSWORD-STRING", inputPass);
 
         int ipLen = inputPass.length();
@@ -183,7 +252,7 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
-    private void ProcessKeypadInput(KeypadButton keypadButton) {
+    private void processKeypadInput(KeypadButton keypadButton) {
         Log.d("INPUT-KEY", keypadButton.getText().toString());
 
         if (KeypadButton.DUMMY == keypadButton) {
@@ -195,14 +264,26 @@ public class AuthActivity extends AppCompatActivity {
         if (KeypadButton.BACKSPACE == keypadButton) {
             if (ipLen > 0) {
                 inputPass = inputPass.substring(0, inputPass.length() - 1);
-                ShowInputView();
+                showInputView();
             }
             return;
         }
 
         if (ipLen < 6) {
             inputPass += keypadButton.getText();
-            ShowInputView();
+            showInputView();
+        }
+    }
+
+    private class FingerPreferenceChanged implements CompoundButton.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            SharedPreferences shpref = getSharedPreferences(Consts.PREF_FILE, MODE_PRIVATE);
+            SharedPreferences.Editor prefEdit = shpref.edit();
+            prefEdit.putBoolean(Consts.PREF_FINGER, b).commit();
+            if (b) {
+                showFingerDialog();
+            }
         }
     }
 
@@ -224,7 +305,7 @@ public class AuthActivity extends AppCompatActivity {
                 Animation shake = AnimationUtils.loadAnimation(targetView.getContext(), R.anim.shake);
                 targetView.startAnimation(shake);
                 inputPass = "";
-                ShowInputView();
+                showInputView();
             }
         }
     }

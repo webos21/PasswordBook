@@ -1,8 +1,9 @@
 package com.gmail.webos21.passwordbook;
 
 import android.app.Application;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class PbApp extends Application {
 

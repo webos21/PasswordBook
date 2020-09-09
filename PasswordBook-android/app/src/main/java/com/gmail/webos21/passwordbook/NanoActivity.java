@@ -5,13 +5,13 @@ import android.content.DialogInterface;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.gmail.webos21.nano.NanoHTTPD;
 import com.gmail.webos21.passwordbook.web.DirWebServer;
